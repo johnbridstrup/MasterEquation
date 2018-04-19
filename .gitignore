@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/statevector.cpython-36.pyc
+__pycache__/Helpers.cpython-36.pyc
+__pycache__/KMC.cpython-36.pyc
+__pycache__/kernels.cpython-36.pyc
+__pycache__/kernels2.cpython-36.pyc
+*.txt
