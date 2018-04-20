@@ -122,7 +122,7 @@ class Propensity(metaclass=ABCMeta):
                                         except:
                                             print("nothin")
                     
-            
+       
         
 class InteractionProbability(Probability):
     def P_Pre(self,element,*args,**kwargs):
@@ -209,17 +209,21 @@ class Model:
         self.t_step=None
         self.nc=nc
         self.propensities=[]
+        self.operations=[]
         self.frequencies=[]
         self.state=state
-        print(self.state)
         self.P=[]
         self.summed_P_vector=[]
         self.indices=[]
     # @property
     # def nc(self):
     #     return self.nc
-    def add_propensity(self,propensity):
+    def add_propensity(self,propensity,operation=None):
         self.propensities.append(propensity)
+        if operation is not None:
+            self.operations.append(operation)
+    def add_mechanisms(self,mechs):
+        self.mechanisms=mechs
     def calculate_probability(self):
         self.P=[]
         self.summed_P_vector=[]
@@ -298,6 +302,7 @@ class Model:
     def time_step(self):
         self.t_step=(1/sum(self.summed_P_vector))*np.log10(1/npr.random())
         print(self.t_step,"Time Step")
+    
     def advance(self):
         print("CHOICE",self.choice)
         if self.choice==0:
@@ -322,8 +327,6 @@ class Model:
         if self.choice==3:
             print("break")
             print(self.state.state)
-            cs=np.cumsum([j for j in self.state.state[1:] if j>3])
-            print(cs,"cs")
             ss=sum([j for j in self.state.state if j>3])
             print(ss,"ss")
             pindex=npr.choice(range(ss))
@@ -354,4 +357,4 @@ class Model:
             del self.state.state[index]
             index=npr.choice(range(len(self.state.state[1:])))+1
             self.state.state[index]=self.state.state[index]+r
-        
+          
