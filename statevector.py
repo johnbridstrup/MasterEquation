@@ -20,13 +20,17 @@ class ModelProcedure:
     def __init__(self):
         self.mechanisms={}
     def add_mechanism(self,mech,name):
-        self.mechanisms[name]= {mech}
+        self.mechanisms[name]= mech
     def run(self,name):
         self.mechanisms[name]()
 def SmoluchowskiModel(state,nc):
     model=ModelProcedure()
     model.add_mechanism(MonomerAddition(state,nc),"add")
-    model.add_mechanism(MonomerSubtraction(state,nc),"sub")
+    model.add_mechanism(MonomerSubtraction(state,nc),"subtract")
+    model.add_mechanism(Nucleation(state,nc),"nucleate")
+    model.add_mechanism(Fragmentation(state,nc),"break")
+    model.add_mechanism(Coagulation(state,nc),"merge")
+    return model
 # ==============================================================================
 # MODEL PRIMITIVES
 # ==============================================================================
@@ -44,7 +48,7 @@ class StateOperation(ABC):
         self.algorithm(*args, **kwargs)
     
     @abstractmethod
-    def algorithm(self, state, *args, **kwargs):
+    def algorithm(self, *args, **kwargs):
         pass
 
 
@@ -57,14 +61,14 @@ class ProteinAggregationBase(StateOperation, ABC):
 
 class MonomerAddition(ProteinAggregationBase):
     def algorithm(self, *args, **kwargs):
-        index = npr.choice(range(self.length()))+1
+        index = npr.choice(range(self.length()-1))+1
         self.state.add(index, 1)
         self.state.sub(0, 1)
 
 
 class MonomerSubtraction(ProteinAggregationBase):
     def algorithm(self, *args, **kwargs):
-        index = npr.choice(range(self.length()))+1
+        index = npr.choice(range(self.length()-1))+1
         final = self.state.sub(index, 1)
         if final < self.nc:
             self.state.add(0, final)
@@ -73,26 +77,26 @@ class MonomerSubtraction(ProteinAggregationBase):
 
 
 class Nucleation(ProteinAggregationBase):
-    def algorithm(self, state, *args, **kwargs):
+    def algorithm(self, *args, **kwargs):
         self.state.add_state_variable(self.nc)
         self.state.sub(0, self.nc)
 
 
 class Fragmentation(ProteinAggregationBase):
-    def algorithm(self, state, *args, **kwargs):
-        ss = state.sum(condition=self.nc)
+    def algorithm(self, *args, **kwargs):
+        ss = self.state.sum(condition=self.nc)
         pindex = npr.choice(range(ss))
         i = 0
         count = 0
         while(i < pindex):
             count += 1
             if self.state.get(count) > 3:
-                i += state.get(count)
+                i += self.state.get(count)
             if i > pindex:
                 r = i-pindex
                 print(r, "r")
                 print(count, "count")
-                brk = state.sub(count, r)
+                brk = self.state.sub(count, r)
                 if brk < self.nc                                                                                                                                                                                       :
                     self.state.add(0, brk)
                     self.state.remove(count)
@@ -103,11 +107,11 @@ class Fragmentation(ProteinAggregationBase):
 
 
 class Coagulation(ProteinAggregationBase):
-    def algorithm(self, state, *args, **kwargs):
-        index = npr.choice(range(kwargs["length"]))+1
+    def algorithm(self, *args, **kwargs):
+        index = npr.choice(range(self.length()-1))+1
         r = self.state.get(index)
         self.state.remove(index)
-        index = npr.choice(range(kwargs["length"]-1))+1
+        index = npr.choice(range(self.length()-1))+1
         self.state.add(index, r)
 # ==============================================================================
 # exceptions
@@ -369,7 +373,7 @@ class StateVector:
     def moment(self, n, shift=0):
         return scps.moment(self.state[shift:], moment=n)
 
-    def skew(self, shift=0):
+    def skew(self, shift=1):
         """Calculate skew
 
         returns skew from scipystats
@@ -381,8 +385,9 @@ class StateVector:
         """
 
         return scps.skew(self.state[shift:])
-
-    def kurtosis(self, shift=0):
+    def histogram(self, shift=1):
+        return np.histogram(self.state[shift:],bins=99,range=(1,100),)
+    def kurtosis(self, shift=1):
         """Kurtosis
 
         scipy stats kurtosis

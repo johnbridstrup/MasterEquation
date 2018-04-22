@@ -12,8 +12,6 @@ class MergeKernel:
     def __call__(self,r,s):
         return 1.0*self.frequency*(r**(self.fractal_dimension)+s**(self.fractal_dimension))
 
-    
-
 class Coagulation:
     def __init__(self,f,nc,*args,**kwargs):
         self.freq=f
@@ -62,7 +60,6 @@ class MonomerAddition:
         except:
             return 0.0
 
-
 class Nucleation:
     def __init__(self,f,nc):
         self.freq=f
@@ -80,7 +77,6 @@ class Nucleation:
         except:
             return 0.0
 
-
 class MonomerSubtraction:
     def __init__(self,f,*args,**kwargs):
         self.freq=f
@@ -92,7 +88,3 @@ class MonomerSubtraction:
                 return 0.0
         except:
             return 0.0
-            
-
-
-        

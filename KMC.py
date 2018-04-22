@@ -4,14 +4,169 @@ import numpy.random as npr
 import statevector as sv
 import kernels2 as k
 from abc import ABCMeta, ABC, abstractmethod
+from collections import MutableMapping
 import itertools as itt
 import functools as funcs
 from functools import reduce
 from operator import mul
+import pandas as pd
 import copy
+from astropy.table import Table, Column
+import pickle
 
-
+class DataPoint:
+    def __init__(self, val, t=0.0, val_unit='', t_unit='s'):
+        self.point=val
+        self.t=t
+        self.units=(val_unit,t_unit)
+    def __repr__(self):
+        return '{} {} at {} {}'.format(self.point,self.units[0],self.t,self.units[1])
+    def __str__(self):
+        return '({},{})'.format(self.point,self.t)
+    def __getitem__(self, index):
+        try:
+            assert((index==0 or index==1 or index==2))
+            if index==0:
+                return self.point
+            elif index==1:
+                return self.t
+            else:
+                return (self.point,self.t)
+        except:
+            raise IndexError('index can only ever be 0, 1 or 2')
+    def __setitem__(self, index, val):
+        try:
+            assert((index==0 or index==1 or index==2))
+            if index==0:
+                self.point=val
+            elif index==1:
+                self.t=val
+            else:
+                try:
+                    self.point=val[0]
+                    self.t=val[1]
+                except:
+                    raise ValueError('input must be tuple or list of at least length 2')
+        except:
+            raise IndexError('index can only ever be 0, 1 or 2')
+    def __delitem__(self, index):
+        pass
     
+class StateVariable(DataPoint):
+    _ID=0
+    @classmethod
+    def get_id(cls):
+        __id=copy.copy(cls._ID)
+        cls._ID+=1
+        return __id
+    def __init__(self,iv=0,it=0,Max=None,Min=None):
+        self._id=self.get_id()
+        if max is not None:
+            self.max=Max
+        if min is not None:
+            self.min=Min
+        super().__init__(iv,it)
+    def __setitem__(self, index, val):
+        if index==0:
+            if val>self.max or val<self.min:
+                raise ValueError('{} is outside of allowed range,[{},{}] for state variable {}'.format(val,self.min,self.max,self._id))
+            else:
+                super().__setitem__(index,val)
+        elif index==2:
+            if val[0]>self.max or val[0]<self.min:
+                raise ValueError('{} is outside of allowed range,[{},{}] for state variable {}'.format(val,self.min,self.max,self._id))
+            else:
+                super().__setitem__(index,val)
+        else:
+            super().__setitem__(index,val)
+class UnitPool(type):
+    """Manages conserved quantities
+    If state variables are composed of conserved quantities, eg energy or mass, UnitPool
+    """
+    _units=0
+    print("dat UnitPool metaclass dooeeee")
+    @classmethod
+    def __prepare__(cls, name, parents, **kwargs):
+        print("__prepare__")
+        return {}
+    def __new__(cls, name, parents, dct):
+        print("__new__")
+        return super(UnitPool,cls).__new__(cls,name,parents,dct)
+    def __init__(cls, name, parents, dct):
+        cls.string="holder"
+        print('__init__')
+    def ReleaseUnits()
+class conserved1(metaclass=UnitPool):
+    pass
+    
+        
+class Data(MutableMapping):
+    def __init__(self,keys=['data'],data=None,*args,**kwargs):
+        if data is None:
+            try:
+                self._storage={key: [] for key in keys}
+            except:
+                self._storage={keys: []}
+        else:
+            try:
+                assert(all(isinstance(x,dict)for x in data))
+                self._storage={}
+                for key,item in zip(keys,data):
+                    item.pop('name')
+                    self._storage[key] = item
+            except:
+                try:
+                    assert(all(isinstance(x,dict)for x in data))
+                    self.storage={}
+                    for item in data:
+                        name = item.pop('name')
+                        self._storage[name]=item
+                except:
+                    try:
+                        self._storage={key: [dat] for key,dat in zip(keys,data)}
+                    except:
+                        try:
+                            self._storage={key: dat for key,dat in zip(keys,data)}
+                        except:
+                            if len(data)!=len(keys):
+                                print("data and key lists must be the same length")
+                                raise ValueError
+                    
+                
+    def __setitem__(self, key, val):
+        try:
+            self._storage[key]=val
+        except:
+            try:
+                if type(val)==list:
+                    self._storage[key]=val
+                else:
+                    self._storage[key]=[val]
+            except:
+                raise TypeError
+        self._storage[key] = val
+    def __getitem__(self, key):
+        return self._storage[key]
+    def __delitem__(self, key, index=None):
+        if index is None:
+            del self._storage[key]
+        else:
+            del self._storage[key][index]
+    def __iter__(self):
+        return iter(self._storage)
+    def __len__(self):
+        return len(self._storage)
+    def __str__(self):
+        '''returns simple dict representation of the mapping'''
+        return str(self._storage)
+    def __repr__(self):
+        '''echoes class, id, & reproducible representation in the REPL'''
+        return '{}, Data({})'.format(super(Data, self).__repr__(), 
+                                  self._storage)
+    def save(self,fn):
+        df=pd.DataFrame(dict([(k,pd.Series(v)) for k,v in self._storage.items()]))
+        print(df)
+        df.to_json(fn)
 class MarkovChain:
     def __init__(self):
         self.current_state=None
@@ -211,19 +366,31 @@ class Model:
         self.propensities=[]
         self.operations=[]
         self.frequencies=[]
+        self.mechanisms=None
         self.state=state
         self.P=[]
         self.summed_P_vector=[]
         self.indices=[]
+        self.data_list=['mass','number','polymers','skew','kurtosis','histogram','t_steps','t','state']
+        self.data=Data(keys=self.data_list)
+        # self.data={}
+        # self.data["mass"]=[]
+        # self.data["number"]=[]
+        # self.data["polymers"]=[]
+        # self.data["skew"]=[]
+        # self.data["kurtosis"]=[]
+        # self.data["histogram"]=[]
+        # self.data["t_steps"]=[]
+        # self.data["t"]=[]
+        # self.data["state"]=[]
     # @property
     # def nc(self):
     #     return self.nc
-    def add_propensity(self,propensity,operation=None):
+    def add_propensity(self,propensity):
         self.propensities.append(propensity)
-        if operation is not None:
-            self.operations.append(operation)
     def add_mechanisms(self,mechs):
         self.mechanisms=mechs
+        print(self.mechanisms)
     def calculate_probability(self):
         self.P=[]
         self.summed_P_vector=[]
@@ -302,59 +469,76 @@ class Model:
     def time_step(self):
         self.t_step=(1/sum(self.summed_P_vector))*np.log10(1/npr.random())
         print(self.t_step,"Time Step")
-    
+    def saveData(self,fn):
+        print(self.data)
+        self.df=pd.DataFrame(self.data)
+        self.df.to_pickle("results")
     def advance(self):
         print("CHOICE",self.choice)
         if self.choice==0:
-            index=npr.choice(range(len(self.state.state[1:])))+1
-            self.state.state[index]=self.state.state[index]+1
-            self.state.state[0]=self.state.state[0]-1
-            print("adding", index, self.state.state[index])
+            self.mechanisms.run("add")
+            print("adding")
         if self.choice==1:
             print("subbing")
-            index=npr.choice(range(len(self.state.state[1:])))+1
-            self.state.state[index]=self.state.state[index]-1
-            if self.state.state[index]<self.nc:
-                self.state.state[0]=self.state.state[0]+self.state.state[index]
-                self.state.state[index]=self.state.state[index]-self.state.state[index]
-            self.state.state[0]=self.state.state[0]+1
+            self.mechanisms.run("subtract")
+            # index=npr.choice(range(len(self.state.state[1:])))+1
+            # self.state.state[index]=self.state.state[index]-1
+            # if self.state.state[index]<self.nc:
+            #     self.state.state[0]=self.state.state[0]+self.state.state[index]
+            #     self.state.state[index]=self.state.state[index]-self.state.state[index]
+            # self.state.state[0]=self.state.state[0]+1
         if self.choice==2:
             print("nucleating")
-            print(self.state.state)
-            print(self.nc)
-            self.state.state.append(self.nc)
-            self.state.state[0]=self.state.state[0]-self.propensities[0].nc
+            self.mechanisms.run("nucleate")
+            # print(self.state.state)
+            # print(self.nc)
+            # self.state.state.append(self.nc)
+            # self.state.state[0]=self.state.state[0]-self.propensities[0].nc
         if self.choice==3:
             print("break")
-            print(self.state.state)
-            ss=sum([j for j in self.state.state if j>3])
-            print(ss,"ss")
-            pindex=npr.choice(range(ss))
-            print(pindex,"pindex")
-            i=0
-            count=0
-            while(i<pindex):
-                count+=1
-                if self.state.state[count]>3:
-                    i+=self.state.state[count]
-                if i>pindex:
-                    r=i-pindex
-                    print(r,"r")
-                    print(count,"count")
-                    self.state.state[count]=self.state.state[count]-r
-                    if self.state.state[count]<self.nc:
-                        self.state.state[0]=self.state.state[0]+self.state.state[count]
-                        del self.state.state[count]
-                    if r<self.nc:
-                        self.state.state[0]=self.state.state[0]+r
-                    else:
-                        self.state.state.append(r)
+            self.mechanisms.run("break")
+            # print(self.state.state)
+            # ss=sum([j for j in self.state.state if j>3])
+            # print(ss,"ss")
+            # pindex=npr.choice(range(ss))
+            # print(pindex,"pindex")
+            # i=0
+            # count=0
+            # while(i<pindex):
+            #     count+=1
+            #     if self.state.state[count]>3:
+            #         i+=self.state.state[count]
+            #     if i>pindex:
+            #         r=i-pindex
+            #         print(r,"r")
+            #         print(count,"count")
+            #         self.state.state[count]=self.state.state[count]-r
+            #         if self.state.state[count]<self.nc:
+            #             self.state.state[0]=self.state.state[0]+self.state.state[count]
+            #             del self.state.state[count]
+            #         if r<self.nc:
+            #             self.state.state[0]=self.state.state[0]+r
+            #         else:
+            #             self.state.state.append(r)
         print("SUM",sum(self.state.state))
         if self.choice==4:
             print("merge")
-            index=npr.choice(range(len(self.state.state[1:])))+1
-            r=self.state.state[index]
-            del self.state.state[index]
-            index=npr.choice(range(len(self.state.state[1:])))+1
-            self.state.state[index]=self.state.state[index]+r
-          
+            self.mechanisms.run("merge")
+            # index=npr.choice(range(len(self.state.state[1:])))+1
+            # r=self.state.state[index]
+            # del self.state.state[index]
+            # index=npr.choice(range(len(self.state.state[1:])))+1
+            # self.state.state[index]=self.state.state[index]+r
+        self.data["polymers"].append(np.sort(self.state.state[:]))          
+        self.data["mass"].append(self.state.sum())
+        self.data["number"].append(self.state.length())
+        self.data["skew"].append(self.state.skew())
+        self.data["kurtosis"].append(self.state.kurtosis())
+        self.data["histogram"].append(self.state.histogram())
+        self.data["t_steps"].append(self.t_step)
+        self.data["t"].append(sum(self.data["t_steps"]))
+        self.data["state"].append(copy.deepcopy(self.state))
+
+if __name__ == '__main__':
+    print("we in it")
+
