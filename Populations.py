@@ -77,15 +77,17 @@ class Population:
         return self.head.__add__(other)
 
 class CompositionVector:
-    def __init__(self, population):
-        try:
-            assert(isinstance(population,Population))
-            self.comp_vector=np.array(population)
-        except:
+    def __init__(self, population=None):
+        if population is not None:
             try:
-                assert(isinstance(population,Point))
-                self.comp_vector=np.array(Population(population))
+                assert(isinstance(population,Population))
+                self.comp_vector=np.array(population)
             except:
-                print('Composition vector must contain instances of Population or Point')
-                raise PointError
-    
+                try:
+                    assert(isinstance(population,Point))
+                    self.comp_vector=np.array(Population(population))
+                except:
+                    print('Composition vector must contain instances of Population or Point')
+                    raise PointError
+        else:
+            self.comp_vector=None

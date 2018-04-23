@@ -483,55 +483,18 @@ class Model:
         if self.choice==1:
             print("subbing")
             self.mechanisms.run("subtract")
-            # index=npr.choice(range(len(self.state.state[1:])))+1
-            # self.state.state[index]=self.state.state[index]-1
-            # if self.state.state[index]<self.nc:
-            #     self.state.state[0]=self.state.state[0]+self.state.state[index]
-            #     self.state.state[index]=self.state.state[index]-self.state.state[index]
-            # self.state.state[0]=self.state.state[0]+1
         if self.choice==2:
             print("nucleating")
             self.mechanisms.run("nucleate")
-            # print(self.state.state)
-            # print(self.nc)
-            # self.state.state.append(self.nc)
-            # self.state.state[0]=self.state.state[0]-self.propensities[0].nc
         if self.choice==3:
             print("break")
             self.mechanisms.run("break")
-            # print(self.state.state)
-            # ss=sum([j for j in self.state.state if j>3])
-            # print(ss,"ss")
-            # pindex=npr.choice(range(ss))
-            # print(pindex,"pindex")
-            # i=0
-            # count=0
-            # while(i<pindex):
-            #     count+=1
-            #     if self.state.state[count]>3:
-            #         i+=self.state.state[count]
-            #     if i>pindex:
-            #         r=i-pindex
-            #         print(r,"r")
-            #         print(count,"count")
-            #         self.state.state[count]=self.state.state[count]-r
-            #         if self.state.state[count]<self.nc:
-            #             self.state.state[0]=self.state.state[0]+self.state.state[count]
-            #             del self.state.state[count]
-            #         if r<self.nc:
-            #             self.state.state[0]=self.state.state[0]+r
-            #         else:
-            #             self.state.state.append(r)
         print("SUM",sum(self.state.state))
         if self.choice==4:
             print("merge")
             self.mechanisms.run("merge")
-            # index=npr.choice(range(len(self.state.state[1:])))+1
-            # r=self.state.state[index]
-            # del self.state.state[index]
-            # index=npr.choice(range(len(self.state.state[1:])))+1
-            # self.state.state[index]=self.state.state[index]+r
-        self.data["polymers"].append(np.sort(self.state.state[:]))          
+
+        self.data["polymers"].append(np.sort(self.state.state[:]))
         self.data["mass"].append(self.state.sum())
         self.data["number"].append(self.state.length())
         self.data["skew"].append(self.state.skew())
