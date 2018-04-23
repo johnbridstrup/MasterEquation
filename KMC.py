@@ -15,12 +15,12 @@ from astropy.table import Table, Column
 import pickle
 
 class DataPoint:
-    def __init__(self, val, t=0.0, val_unit='', t_unit='s'):
+    def __init__(self, val, t=0.0, val_unit=' ', t_unit='s'):
         self.point=val
         self.t=t
         self.units=(val_unit,t_unit)
     def __repr__(self):
-        return '{} {} at {} {}'.format(self.point,self.units[0],self.t,self.units[1])
+        return '{}{}at {} {}'.format(self.point,self.units[0],self.t,self.units[1])
     def __str__(self):
         return '({},{})'.format(self.point,self.t)
     def __getitem__(self, index):
@@ -61,6 +61,7 @@ class StateVariable(DataPoint):
         return __id
     def __init__(self,iv=0,it=0,Max=None,Min=None):
         self._id=self.get_id()
+        self.series=[]
         if max is not None:
             self.max=Max
         if min is not None:
@@ -71,6 +72,7 @@ class StateVariable(DataPoint):
             if val>self.max or val<self.min:
                 raise ValueError('{} is outside of allowed range,[{},{}] for state variable {}'.format(val,self.min,self.max,self._id))
             else:
+                self.series.append((super(StateVariable,self).point,super(StateVariable,self).t))
                 super().__setitem__(index,val)
         elif index==2:
             if val[0]>self.max or val[0]<self.min:
@@ -95,7 +97,7 @@ class UnitPool(type):
     def __init__(cls, name, parents, dct):
         cls.string="holder"
         print('__init__')
-    def ReleaseUnits()
+    
 class conserved1(metaclass=UnitPool):
     pass
     
