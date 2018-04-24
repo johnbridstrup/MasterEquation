@@ -1,0 +1,18 @@
+[StateVector|momentFunctions();Mutators()|
+[<absract>Point|value: int;time: float]<:-[StateVariable]]
+[Model|ConservedQuantities: int_float;
+client_defined_constants: int_float]
+
+[KineticMonteCarlo|RandomNumberGenerator|
+[Mechanism]<:-[ConcreteReactionMechanism]]
+
+[<abstract>Algorithm]<:-[KineticMonteCarlo]
+[Algorithm]--:>[Algorithm_Interface]
+[Algorithm_Interface]--:>[Mechanism_Interface]
+[StateVector]--:>[Mechanism_Interface]
+[Model]--:>[Algorithm_Interface]
+[KineticMonteCarlo]--:>[Mechanism_Interface]
+
+[Model]+->[StateVector]
+
+
