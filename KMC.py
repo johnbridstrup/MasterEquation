@@ -51,7 +51,7 @@ class DataPoint:
             raise IndexError('index can only ever be 0, 1 or 2')
     def __delitem__(self, index):
         pass
-    
+
 class StateVariable(DataPoint):
     _ID=0
     @classmethod
@@ -97,11 +97,11 @@ class UnitPool(type):
     def __init__(cls, name, parents, dct):
         cls.string="holder"
         print('__init__')
-    
+
 class conserved1(metaclass=UnitPool):
     pass
-    
-        
+
+
 class Data(MutableMapping):
     def __init__(self,keys=['data'],data=None,*args,**kwargs):
         if data is None:
@@ -133,8 +133,6 @@ class Data(MutableMapping):
                             if len(data)!=len(keys):
                                 print("data and key lists must be the same length")
                                 raise ValueError
-                    
-                
     def __setitem__(self, key, val):
         try:
             self._storage[key]=val
@@ -163,7 +161,7 @@ class Data(MutableMapping):
         return str(self._storage)
     def __repr__(self):
         '''echoes class, id, & reproducible representation in the REPL'''
-        return '{}, Data({})'.format(super(Data, self).__repr__(), 
+        return '{}, Data({})'.format(super(Data, self).__repr__(),
                                   self._storage)
     def save(self,fn):
         df=pd.DataFrame(dict([(k,pd.Series(v)) for k,v in self._storage.items()]))
@@ -180,7 +178,7 @@ class KMC:
         self.stop_criteria=False
         self.steps=0
         assert(type(statevec)==sv.StateVector)
-                                               
+
     def reaction_propensities(self):
         pass
     def random_numbers(self):
@@ -206,7 +204,7 @@ class Probability(metaclass=ABCMeta):
         pass
 class Propensity(metaclass=ABCMeta):
     """Decorator to convert function "P(state variable) = probability of single state or transition" into "P(state vector) = vector of (probabilities, index). This is for linear propensities or propensities which are functions of only one state variable."
-    
+
     use **kwargs for:
     indices = [list of indices] applies the function to given indices
     range = [start, end] or single integer applies function to indices in range(start,end) or range(single integer)
@@ -278,9 +276,9 @@ class Propensity(metaclass=ABCMeta):
                                             return ((self.propensity_function(self.state[0],*args,**kwargs),0))
                                         except:
                                             print("nothin")
-                    
-       
-        
+
+
+
 class InteractionProbability(Probability):
     def P_Pre(self,element,*args,**kwargs):
         return self.P(element,args,kwargs)
@@ -342,7 +340,7 @@ class Fragmentation(MonomerSubtraction):
         print(state,indices,"fraggin")
         if copy.copy(self.nc)>3:
             lim=copy.copy(self.nc)
-        else: 
+        else:
             lim=3
         [print("hur",i,state[i],(i-2)*state[i]*self.frequency) for i in indices if i>lim]
         out = [((i-2)*state[i]*self.frequency,i) for i in indices[1:] if i>lim]
@@ -463,7 +461,7 @@ class Model:
         sss=sum(self.bulk_P)
         self.norm_probability=[i/sss for i in self.bulk_P]
 
-           
+
     def choose(self):
         self.choice=npr.choice(range(len(self.summed_P_vector)), p=self.norm_probability)
         print(self.choice)
