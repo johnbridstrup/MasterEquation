@@ -21,8 +21,8 @@ class ModelProcedure:
         self.mechanisms={}
     def add_mechanism(self,mech,name):
         self.mechanisms[name]= mech
-    def run(self,name):
-        self.mechanisms[name]()
+    def run(self,name,**kwargs):
+        self.mechanisms[name](**kwargs)
 def SmoluchowskiModel(state,nc):
     model=ModelProcedure()
     model.add_mechanism(MonomerAddition(state,nc),"add")
@@ -232,6 +232,7 @@ class StateVector:
     def addOne(self, shift=1):
         index = npr.choice(range(len(self.state)))
         print("INDEX", index)
+        
         self.state[index] = self.state[index]+1
         if shift == 1:
             self.state[0] = self.state[0]-1

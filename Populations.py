@@ -149,7 +149,7 @@ class CompositionVector:
     def archive(cls,point):
         cls._archive.append(point)
     def __init__(self, point=None, nc=0):
-        self.__methods={'sum':self.__sum,'average':self.__avg}
+        self.__methods={'sum':self.__sum,'average':self.__avg, 'length':self.__len,}
         if point is not None:
             self.initialized=True
             try:
@@ -205,6 +205,7 @@ class CompositionVector:
         return sum(self.state)/len(self.state)
     def __len(self):
         return len(self.state)
+    def def 
         
 def main():
     lst=[0,1,2,3,4,5]
