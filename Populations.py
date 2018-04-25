@@ -14,7 +14,7 @@ class Point:
         self.point = (data, time)
         self.value = data
         self.t = time
-        self.next = None
+        self.nxt = None
 
     def __repr__(self):
         return repr(self.value)
@@ -27,17 +27,15 @@ class Point:
     def __iadd__(self, other):
         ## replace current with temp
         tmp1=Point(self.value,self.t)
-        tmp1=self.next
-        ## insert intermediary for step-like behavior
         tmp2=Point(self.value,self.t+other.t)
-        tmp2.next=tmp1
-        ## incremement and attach self
+        tmp1.nxt=self.nxt
+        tmp2.nxt=tmp1
         self.value=self.value+other.value
         self.t=self.t+other.t
-        self.next=tmp2
+        self.nxt=tmp2
         return self
     def push_back(self,data,t):
-        iadd(self, Point(data,t))
+        self.__iadd__(Point(data,t))
     def __radd__(self, other):
         return self.__add__(other)
 
@@ -53,10 +51,11 @@ class Point:
         if key == 'value' or key == 'val' or key == 'Val' or key == 'Value' or key == 0:
             self.value = val
     def __iter__(self):
-        next_point=self.next
-        while next_point is not None:
-            yield next_point
-            next_point=next_point.next
+        curr=self
+        while curr is not None:
+            yield curr
+            curr=curr.nxt
+            
     def get_all(self):
         return [(i, i.t) for i in self]
 class PointUpdate(Point):
@@ -94,18 +93,18 @@ class PointUpdate(Point):
 #         curr = self.head
 #         while curr is not None:
 #             yield curr
-#             curr = curr.next
+#             curr = curr.nxt
 #     def get_ID(self):
 #         return self._ID
 #     def push_back(self, point):
 #         try:
 #             assert(isinstance(point, Point))
-#             point.next = self.head
+#             point.nxt = self.head
 #             self.head = point
 #         except:
 #             try:
 #                 tmp_next = Point(point[0], point[1])
-#                 tmp_next.next = self.head
+#                 tmp_next.nxt = self.head
 #                 self.head = point
 #             except:
 #                 print("input to push_back must be Point or container of two elements")
@@ -145,7 +144,12 @@ class PointUpdate(Point):
 #     def __iadd__(self, point):
 
 class CompositionVector:
-    def __init__(self, point=None):
+    _archive=[]
+    @classmethod
+    def archive(cls,point):
+        cls._archive.append(point)
+    def __init__(self, point=None, nc=0):
+        self.__methods={'sum':self.__sum,'average':self.__avg}
         if point is not None:
             self.initialized=True
             try:
@@ -158,28 +162,60 @@ class CompositionVector:
     def add_variable(self,point):
         if not self.initialized:
             try:
-                self.comp_vector=np.array(point)
-                for i in self.comp_vector:
+                self.state=np.array(point)
+                for i in self.state:
                     print(i.get_ID())
             except:
                 print('gotta finnarray')
                 raise
         else:
             self.state=np.append(self.state,point)
+    def __getitem__(self, key):
+        if isinstance(key,integer):
+            return self.state[index]
+        elif key=='average':
+            return sum(self.state)/len(self.state)
+        elif key=='sum':
+            return sum(self.state)
+        elif key=='length'
+        elif isinstance(key,tuple):
+            try:
+                outp=self.state[key[0]]
+                for i in range(key[1]):
+                    outp=outp.next
+                return outp
+            except:
+                print("that time step probably doesnt exist")
+    def __setitem__(self,index,key):
+        pass
     def __iter__(self):
-        return self
-    def __next__(self):
         self.it=0
-        while self.it<len(self.state):
-            yield state[self.it]
-            self.it+=1
+        return self
+    def length(self):
+        return len(self.state)
+    def __next__(self):
+        index=self.it
+        self.it+=1
+        while self.it<=len(self.state):
+            return self.state[index]
+        raise StopIteration
+    def __sum(self):
+        return sum(self.state)
+    def __avg(self):
+        return sum(self.state)/len(self.state)
+    def __len(self):
+        return len(self.state)
+        
 def main():
     lst=[0,1,2,3,4,5]
     tlst=[0.0,0.1,0.2,0.3,0.4,0.5]
-    points=[(i,j) for i,j in zip(lst,tlst)]
+    points=[Point(i,j) for i,j in zip(lst,tlst)]
     state=CompositionVector(points)
+    state[2]+=Point(11,11)
+    state[4]+=Point(100,1000)
     for i in state:
         print(i.get_all())
+    print(sum(state))
 
 if __name__ == '__main__':
     main()
