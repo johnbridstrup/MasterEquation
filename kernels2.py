@@ -19,7 +19,10 @@ class Coagulation:
     def __init__(self, f, nc, *args, **kwargs):
         self.freq = f
         self.index_pairs = []
-
+        try:
+            self.freq=self.freq*kwargs["c"]/kwargs["M"]
+        except:
+            pass
     def __call__(self, s):
         try:
             outp = []
@@ -58,6 +61,10 @@ class MonomerAddition:
     def __init__(self, f, nc, *args, **kwargs):
         self.freq = f
         self.nc = nc
+        try:
+            self.freq = self.freq*kwargs["c"]/kwargs["M"]
+        except:
+            pass
 
     def __call__(self, s):
         try:
@@ -70,9 +77,13 @@ class MonomerAddition:
 
 
 class Nucleation:
-    def __init__(self, f, nc):
+    def __init__(self, f, nc,**kwargs):
         self.freq = f
         self.nc = nc
+        try:
+            self.freq = self.freq *(kwargs["c"]/kwargs["M"])**self.nc
+        except:
+            pass
 
     def __call__(self, s, *args, **kwargs):
         prod = self.freq
@@ -100,3 +111,27 @@ class MonomerSubtraction:
                 return 0.0
         except:
             return 0.0
+
+class Propensities:
+    def __init__(self,props,names=None):
+        self.propensities={}
+        try:
+            for key,val in props.items():
+                self.propensities[key]=val
+        except:
+            try:
+                for name,prop in zip(names,props):
+                    self.propensities[name]=prop
+            except:
+                try: 
+                    for index,prop in zip(range(len(props)),props):
+                        self.propensities[index]=prop
+                except:
+                    try:
+                        self.propensities[names]=props
+                    except:
+                        try:
+                            assert(type(props) != list)
+                            self.propensities[0]=props
+                        except:
+                            print("WTF is this?: ",props)

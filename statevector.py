@@ -78,6 +78,7 @@ class MonomerSubtraction(ProteinAggregationBase):
 
 class Nucleation(ProteinAggregationBase):
     def algorithm(self, *args, **kwargs):
+        print("nuuuuuc",self.nc)
         self.state.add_state_variable(self.nc)
         self.state.sub(0, self.nc)
 
@@ -232,7 +233,7 @@ class StateVector:
     def addOne(self, shift=1):
         index = npr.choice(range(len(self.state)))
         print("INDEX", index)
-        
+        val=self.state[index]
         self.state[index] = self.state[index]+1
         if shift == 1:
             self.state[0] = self.state[0]-1

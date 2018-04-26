@@ -164,7 +164,7 @@ class Data(MutableMapping):
         return '{}, Data({})'.format(super(Data, self).__repr__(),
                                   self._storage)
     def save(self,fn):
-        df=pd.DataFrame(dict([(k,pd.Series(v)) for k,v in self._storage.items()]))
+        df=pd.DataFrame.from_dict(dict([(k,pd.Series(v)) for k,v in self._storage.items()]))
         print(df)
         df.to_json(fn)
 class MarkovChain:
@@ -362,6 +362,7 @@ class Coagulation(Probability):
 class Model:
     def __init__(self,state,nc):
         self.t_step=None
+        self.t=0
         self.nc=nc
         self.propensities=[]
         self.operations=[]
@@ -468,31 +469,34 @@ class Model:
 
     def time_step(self):
         self.t_step=(1/sum(self.summed_P_vector))*np.log10(1/npr.random())
+        self.t+=self.t_step
         print(self.t_step,"Time Step")
     def saveData(self,fn):
         print(self.data)
-        self.df=pd.DataFrame(self.data)
+        self.df=pd.DataFrame.from_dict(self.data)
         self.df.to_pickle("results")
+        
     def advance(self):
+        self.time_step()
         print("CHOICE",self.choice)
         if self.choice==0:
-            self.mechanisms.run("add")
+            self.mechanisms.run("add", t=self.t)
             print("adding")
         if self.choice==1:
             print("subbing")
-            self.mechanisms.run("subtract")
+            self.mechanisms.run("subtract", t=self.t)
         if self.choice==2:
             print("nucleating")
-            self.mechanisms.run("nucleate")
+            self.mechanisms.run("nucleate", t=self.t)
         if self.choice==3:
             print("break")
-            self.mechanisms.run("break")
+            self.mechanisms.run("break", t=self.t)
         print("SUM",sum(self.state.state))
         if self.choice==4:
             print("merge")
-            self.mechanisms.run("merge")
+            self.mechanisms.run("merge", t=self.t)
 
-        self.data["polymers"].append(np.sort(self.state.state[:]))
+        self.data["polymers"].append(copy.deepcopy(self.state.state))
         self.data["mass"].append(self.state.sum())
         self.data["number"].append(self.state.length())
         self.data["skew"].append(self.state.skew())

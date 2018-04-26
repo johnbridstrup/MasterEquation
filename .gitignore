@@ -111,7 +111,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+*.pdf
+*.json
+*.png
 .vscode/settings.json
 .vscode/launch.json
 DebugTools/DebugDecorators.py
 GistJacked/Matplotlib_snips.py
+dynamic_chain_graphs.pdf
