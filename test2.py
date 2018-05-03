@@ -36,7 +36,7 @@ while(looping):
     if countr>200:
         looping = False
     
-model.data.save("run1.json")
+model.data.save("run2.json")
 
 
 

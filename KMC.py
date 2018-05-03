@@ -166,7 +166,7 @@ class Data(MutableMapping):
     def save(self,fn):
         df=pd.DataFrame(dict([(k,pd.Series(v)) for k,v in self._storage.items()]))
         print(df)
-        df.to_json(fn)
+        df.to_json('results/'+fn)
 class MarkovChain:
     def __init__(self):
         self.current_state=None

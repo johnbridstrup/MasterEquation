@@ -19,7 +19,10 @@ class Coagulation:
     def __init__(self, f, nc, *args, **kwargs):
         self.freq = f
         self.index_pairs = []
-
+        try:
+            self.freq=self.freq*kwargs["c"]/kwargs["M"]
+        except:
+            pass
     def __call__(self, s):
         try:
             outp = []
@@ -58,6 +61,10 @@ class MonomerAddition:
     def __init__(self, f, nc, *args, **kwargs):
         self.freq = f
         self.nc = nc
+        try:
+            self.freq = self.freq*kwargs["c"]/kwargs["M"]
+        except:
+            pass
 
     def __call__(self, s):
         try:
@@ -70,21 +77,29 @@ class MonomerAddition:
 
 
 class Nucleation:
-    def __init__(self, f, nc):
+    def __init__(self, f, nc,**kwargs):
         self.freq = f
         self.nc = nc
+        try:
+            self.freq = self.freq *(kwargs["c"]/kwargs["M"])**self.nc
+        except:
+            pass
 
     def __call__(self, s, *args, **kwargs):
         prod = self.freq
+        print("WE IN DAT CALL",type(s))
+        print("____",type(s[0]),s[0],self.nc)
         try:
             if s[0] > self.nc:
                 print(3)
                 for i in range(self.nc):
                     prod = 1.0*prod*(1.0*s[0]-1.0*i)
+                print("daprooood",prod)
                 return prod
             else:
                 return 0.0
-        except:
+        except Exception as e:
+            print("catchin some't ", e)
             return 0.0
 
 
@@ -92,7 +107,7 @@ class MonomerSubtraction:
     def __init__(self, f, *args, **kwargs):
         self.freq = f
 
-    def __call__(self, s):
+    def __call__(self, s, **kwargs):
         try:
             if len(s) > 1:
                 return [2*self.freq for i in range(len(s)-1)]
@@ -100,3 +115,27 @@ class MonomerSubtraction:
                 return 0.0
         except:
             return 0.0
+
+class Propensities:
+    def __init__(self,props,names=None):
+        self.propensities={}
+        try:
+            for key,val in props.items():
+                self.propensities[key]=val
+        except:
+            try:
+                for name,prop in zip(names,props):
+                    self.propensities[name]=prop
+            except:
+                try: 
+                    for index,prop in zip(range(len(props)),props):
+                        self.propensities[index]=prop
+                except:
+                    try:
+                        self.propensities[names]=props
+                    except:
+                        try:
+                            assert(type(props) != list)
+                            self.propensities[0]=props
+                        except:
+                            print("WTF is this?: ",props)
