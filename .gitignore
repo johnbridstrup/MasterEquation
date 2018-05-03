@@ -98,6 +98,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+Kinetics_Paper
 
 # Spyder project settings
 .spyderproject
@@ -123,3 +124,4 @@ Papers/analysis.html
 GistJacked/utils1.py
 paper_first_draft.md
 paper_first_draft.md
+Kinetics_Paper
