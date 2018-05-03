@@ -492,7 +492,7 @@ class Model:
             print("merge")
             self.mechanisms.run("merge")
 
-        self.data["polymers"].append(np.sort(self.state.state[:]))
+        self.data["polymers"].append(self.state.state[:])
         self.data["mass"].append(self.state.sum())
         self.data["number"].append(self.state.length())
         self.data["skew"].append(self.state.skew())

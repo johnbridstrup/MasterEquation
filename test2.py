@@ -33,10 +33,10 @@ while(looping):
     #     looping=False
     # if inp=="1":
     #     print(model.data)
-    if countr>200:
+    if countr>300:
         looping = False
     
-model.data.save("run2.json")
+model.data.save("run1.json")
 
 
 
