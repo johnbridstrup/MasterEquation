@@ -115,3 +115,11 @@ venv.bak/
 .vscode/launch.json
 DebugTools/DebugDecorators.py
 GistJacked/Matplotlib_snips.py
+
+# General tomfoolery
+*.pdf
+*.json
+*.png
+utils*
+run1.json
+analysis.html
