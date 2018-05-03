@@ -311,7 +311,7 @@ class StateVector:
     def add(self, index, value):
         self.state[index] = self.state[index]+value
 
-    def sub(self, index, value):
+    def sub(self, index, value, **kwargs):
         self.state[index] = self.state[index]-value
         return self.state[index]
 

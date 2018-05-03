@@ -396,17 +396,20 @@ class Model:
         self.P=[]
         self.summed_P_vector=[]
         for i in self.propensities:
-            self.P.append(i(self.state.state))
+            print(i)
+            print(self.state.state)
+            self.P.append(i(self.state))
         for i in self.P:
             try:
                 self.summed_P_vector.append(sum(i))
             except:
                 self.summed_P_vector.append(i)
-        print(self.summed_P_vector)
         norm=sum(self.summed_P_vector)
-        print(norm)
-        self.norm_probability=[i/norm for i in self.summed_P_vector]
-        print(self.norm_probability)
+        print("NOOORMIIIEEE",norm)
+        try:
+            self.norm_probability=[i/norm for i in self.summed_P_vector]
+        except ZeroDivisionError as zerr:
+            pass
     def ready(self):
         self.P=[]
         self.indices=[]
@@ -496,11 +499,11 @@ class Model:
             print("merge")
             self.mechanisms.run("merge", t=self.t)
 
-        self.data["polymers"].append(copy.deepcopy(self.state.state))
+        #self.data["polymers"].append(copy.deepcopy(self.state.state))
         self.data["mass"].append(self.state.sum())
         self.data["number"].append(self.state.length())
         self.data["skew"].append(self.state.skew())
-        self.data["kurtosis"].append(self.state.kurtosis())
+        #self.data["kurtosis"].append(self.state.kurtosis())
         self.data["histogram"].append(self.state.histogram())
         self.data["t_steps"].append(self.t_step)
         self.data["t"].append(sum(self.data["t_steps"]))

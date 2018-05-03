@@ -13,6 +13,7 @@ class testbase(ABC):
         print("call")
         cls.do_the_thing(*args,**kwargs)
     
+    @classmethod
     @abstractmethod
     def do_the_thing(cls,*args,**kwargs):
         pass

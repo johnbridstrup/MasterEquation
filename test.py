@@ -40,7 +40,7 @@ print(x.kurtosis(1),"kurtosis")
 #     def __call__(self,*args,**kwargs):
 #         num,*args=args
 #         return [self.func(i,*args,**kwargs) for i in range(num)]
-@KMC.Propensity
+@KMC.Propensity 
 def sq(s,*args,**kwargs):
     return np.sin(np.pi*s*(args[0]+1)/kwargs["length"])
 

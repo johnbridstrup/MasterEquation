@@ -87,15 +87,19 @@ class Nucleation:
 
     def __call__(self, s, *args, **kwargs):
         prod = self.freq
+        print("WE IN DAT CALL",type(s))
+        print("____",type(s[0]),s[0],self.nc)
         try:
             if s[0] > self.nc:
                 print(3)
                 for i in range(self.nc):
                     prod = 1.0*prod*(1.0*s[0]-1.0*i)
+                print("daprooood",prod)
                 return prod
             else:
                 return 0.0
-        except:
+        except Exception as e:
+            print("catchin some't ", e)
             return 0.0
 
 
