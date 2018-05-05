@@ -114,7 +114,6 @@ venv.bak/
 .vscode/settings.json
 .vscode/launch.json
 DebugTools/DebugDecorators.py
-GistJacked/Matplotlib_snips.py
 
 # General tomfoolery
 *.pdf
@@ -123,3 +122,17 @@ GistJacked/Matplotlib_snips.py
 utils*
 run1.json
 analysis.html
+results/multiruns*
+*.pickle
+results/Old/multiruns0
+results/Old/multiruns1
+results/Old/multiruns10
+results/Old/multiruns2
+results/Old/multiruns3
+results/Old/multiruns4
+results/Old/multiruns5
+results/Old/multiruns6
+results/Old/multiruns7
+results/Old/multiruns8
+results/Old/multiruns9
+test_scripts/*

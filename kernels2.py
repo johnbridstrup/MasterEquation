@@ -1,28 +1,164 @@
 #! kernels.py
 import KMC
 import statevector as sv
+from abc import ABC,abstractmethod
+from functools import wraps
+
+def avo():
+    return 6.022*10**23
+def RateError(Exception):
+    pass
+def NoRatesError(RateError):
+    pass
+def RateTransformError(RateError):
+   pass
+def call_later(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        print("calling later")
+        return f
+    print("called later")
+    return wrapper
+class Rates:
+    def __init__(self,R=None,T=None,*args,**kwargs):
+        self.errs={}
+        self.R=R
+        self.T=T
+        if R is not None:
+            if T is not None:
+                try:
+                    self.rates=R*T
+                except:
+                    try:
+                        self.rates=T(R)
+                    except:
+                        msg="can't transform even though R and T are given. Will hold for later"
+                        print(msg)
+                        self.errs['transform']=(RateTransformError,msg)
+                        self.hold_ToR=call_later(T)
+            else:
+                if callable(R):
+                    try:
+                        self.rates=R(*args,**kwargs)
+                    except:
+                        try:
+                            self.rates=R()
+                        except:
+                            msg="can't call R despite callable(R). will try holding it for later"
+                            print(msg)
+                            self.errs['rates']=(NoRatesError,msg)
+                            self.hold_R=call_later(R)
+        else:
+            try:
+                self.rates=T(kwargs)
+            except:
+                try:
+                    self.rates=T()
+                except:
+                    msg="Holding T for later. Cant execute alone and have no R"
+                    print(msg)
+                    self.errs['transform']=(RateTransformError,msg)
+                    self.hold_T=call_later(T)
+class TransformFunction(ABC):
+    def __init__(self,*args,**kwargs):
+        self.args=args
+        self.kwargs=kwargs
+    @abstractmethod
+    def __call__(self,R):
+        pass      
+def default_rates():
+    R={}
+    R['a']=1
+    R['b']=0.000001
+    R['am']=R['a']
+    R['bf']=R['b']
+    R['kn']=0.00001
+    return R
+class DefaultRates(Rates):
+    def __init__(self):
+        super().__init__(default_rates())
+
+def I(inp,*ins,**kwins):
+    return inp
+# class IRates(Rates):
+#     def     
 
 
-class MergeKernel:
-    def __init__(self, frequency, **kwargs):
-        self.frequency = frequency
+
+class Monomers:
+    def __init__(self,M=500):
+        self.M=500
+    def __call__(self):
+        return [self.M]
+class RateTransform(ABC):
+    def __init__(self,f,**kwargs):
+        self.freq=None
+        # self.Volume=None
+        self.params=kwargs
+        self.bulkrate=f
+    def __call__(self,**kwargs):
+        return self.freq
+    @abstractmethod
+    def transform(self):
+        pass
+ 
+class Bimolecular(RateTransform):
+    def __init__(self,f,M=500,c=1,same=False):
+        super().__init__(f,M=M,c=c,same=same)
+        self.transform()
+    def transform(self):
+        self.f=self.bulkrate*self.params['c']/self.params['M']
+    def __call__(self,**kwargs):
+        outp=self.freq
+        outp*=self.params['N1']
+    # @property
+    # def Volume(self):
+    #     pass
+class N_Molecular(RateTransform):
+    def __init__(self, f,M=500,c=1,nc=3,same=False):
+        super().__init__(f,M=500,c=1,nc=3,same=same)
+    def transform(self):
+        nn=self.bulkrate
+        if self.params['same']:
+            for i in range(self.params['nc']):
+                nn*=(self.params['M']-i)
+            self.freq=nn
+        else:
+            raise ValueError('uhhhhh idk havent implemented it')      
+class default_transform(RateTransform):
+    def transform(self):
+        self.freq=self.bulkrate
+class Unimolecular(default_transform):
+    pass
+class Kernel(ABC):
+    def __init__(self, f, bulk_transform=default_transform):
+        self.bulk_transform=bulk_transform
+        self.freq=f
+        self.propensities=[]
         try:
-            self.fractal_dimension = kwargs["fractal_dimension"]
-        except:
-            self.fractal_dimension = 1.0/3.0
-
-    def __call__(self, r, s):
-        return 1.0*self.frequency*(r**(self.fractal_dimension)+s**(self.fractal_dimension))
-
-
-class Coagulation:
-    def __init__(self, f, nc, *args, **kwargs):
-        self.freq = f
-        self.index_pairs = []
-        try:
-            self.freq=self.freq*kwargs["c"]/kwargs["M"]
+            self.freq=bulk_transform(bulk_transform.freq,**bulk_transform.params)
         except:
             pass
+    def add_propensity(self,prop,label=None):
+        if label is None:
+            label = prop.__name__
+        try:
+            for key,val in prop.items:
+                self.propensities.append(val)
+        except:
+            try:
+                [self.propensities.append(item) for label,item in prop.items()]
+            except:
+                try:
+                    self.propensities.append(prop)
+                except:
+                    print('propensity adding is broked')
+                    raise                  
+class Coagulation(Kernel):
+    def __init__(self, f, nc, bulk_transform=None, *args, **kwargs):
+        super().__init__(f, bulk_transform)
+        self.index_pairs = []
+        
     def __call__(self, s):
         try:
             outp = []
@@ -37,11 +173,9 @@ class Coagulation:
                 return 0.0
         except:
             return 0.0
-
-
-class Fragmentation:
-    def __init__(self, f, nc, *args, **kwargs):
-        self.freq = f
+class Fragmentation(Kernel):
+    def __init__(self, f, nc, bulk_transform=default_transform, *args, **kwargs):
+        super().__init__(f,bulk_transform)
 
     def __call__(self, s):
         try:
@@ -55,16 +189,10 @@ class Fragmentation:
                 return 0.0
         except:
             return 0.0
-
-
-class MonomerAddition:
-    def __init__(self, f, nc, *args, **kwargs):
-        self.freq = f
+class MonomerAddition(Kernel):
+    def __init__(self, f, nc, bulk_transform=Bimolecular,*args, **kwargs):
+        super().__init__(f,bulk_transform)
         self.nc = nc
-        try:
-            self.freq = self.freq*kwargs["c"]/kwargs["M"]
-        except:
-            pass
 
     def __call__(self, s):
         try:
@@ -74,11 +202,9 @@ class MonomerAddition:
                 return 0.0
         except:
             return 0.0
-
-
-class Nucleation:
-    def __init__(self, f, nc,**kwargs):
-        self.freq = f
+class Nucleation(Kernel):
+    def __init__(self, f, nc,bulk_transform=N_Molecular,**kwargs):
+        super().__init__(f,bulk_transform)
         self.nc = nc
         try:
             self.freq = self.freq *(kwargs["c"]/kwargs["M"])**self.nc
@@ -101,11 +227,9 @@ class Nucleation:
         except Exception as e:
             print("catchin some't ", e)
             return 0.0
-
-
-class MonomerSubtraction:
-    def __init__(self, f, *args, **kwargs):
-        self.freq = f
+class MonomerSubtraction(Kernel):
+    def __init__(self, f, bulk_transform=Unimolecular,*args, **kwargs):
+        super().__init__(f,bulk_transform)
 
     def __call__(self, s, **kwargs):
         try:
@@ -115,7 +239,6 @@ class MonomerSubtraction:
                 return 0.0
         except:
             return 0.0
-
 class Propensities:
     def __init__(self,props,names=None):
         self.propensities={}
