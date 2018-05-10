@@ -25,6 +25,11 @@ if __name__=='__main__':
     fn='input.data'
     runs=10
     counts=300
+    conc = 5
+    units = {'value':5,
+             'unit':'molar',
+             'prefix':'micro'
+    }
     nc=3
     mons=500
     rates=[1,0.0001,1,0.0001,0.000001]

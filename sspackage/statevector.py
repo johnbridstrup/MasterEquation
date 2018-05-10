@@ -45,7 +45,7 @@ class StateOperation(ABC):
         self.state = state
         self.routines=[]
     def __call__(self, *args, **kwargs):
-        #print("calling")
+        # print("calling")
         self.algorithm(*args, **kwargs)
     
     @abstractmethod
@@ -95,13 +95,13 @@ class Fragmentation(ProteinAggregationBase):
                 i += self.state.get(count)
             if i > pindex:
                 r = i-pindex
-                print(r, "r")
-                print(count, "count")
+                # print(r, "r")
+                # print(count, "count")
                 brk = self.state.sub(count, r)
-                if brk < self.nc                                                                                                                                                                                       :
+                if brk < self.nc:
                     self.state.add(0, brk)
                     self.state.remove(count)
-                if r < self.nc                                                                                                                                                                                       :
+                if r < self.nc:
                     self.state.add(0, r)
                 else:
                     self.state.add_state_variable(r)
@@ -168,7 +168,7 @@ class StateVector:
                     try:
                         self.state = np.array(initial_conditions)
                     except:
-                        print("its some weird, not array-ifiable type")
+                        # print("its some weird, not array-ifiable type")
                         raise
             self.delete_zeros = delete_zeros
 
@@ -177,12 +177,14 @@ class StateVector:
 
     def __str__(self):
         return str(self.state)
+    def __len__(self):
+        return len(self.state)
 
     def __getitem__(self, index):
         try:
             return self.state[index]
         except (TypeError, IndexError) as e:
-            print("No string get implementiation, you must use an index")
+            # print("No string get implementiation, you must use an index")
             raise e
 
     def length(self):
@@ -207,10 +209,10 @@ class StateVector:
         try:
             self.state[index] = value
         except:
-            print("Tried to access and set by index value")
-            print("index: ", index)
-            print("value: ", value)
-            print("state: ", self.state)
+            # print("Tried to access and set by index value")
+            # print("index: ", index)
+            # print("value: ", value)
+            # print("state: ", self.state)
             raise
 
     def random_set_by_value(self, old_value, new_value, add=False):
@@ -232,7 +234,7 @@ class StateVector:
 
     def addOne(self, shift=1):
         index = npr.choice(range(len(self.state)))
-        print("INDEX", index)
+        # print("INDEX", index)
         self.state[index] = self.state[index]+1
         if shift == 1:
             self.state[0] = self.state[0]-1
@@ -249,10 +251,10 @@ class StateVector:
     def breakOne(self, nc):
         index = npr.choice(
             [i for i, v in enumerate(self.state) if v > 3 and i > 0])
-        print("index", index)
+        # print("index", index)
         try:
             r = npr.choice(np.array(list(range(4, self.state[index]))))
-            print(r, "r")
+            # print(r, "r")
             self.state[index] = self.state[index]-r
             if self.state[index] < nc:
                 self.state[0] = self.state[0]+self.state[index]
@@ -262,11 +264,12 @@ class StateVector:
             else:
                 self.state[0] = self.state[0]+r
         except:
-            print("WHAT THE FUCKING UCK YOU FUCK")
+            pass
+            # print("WHAT THE FUCKING UCK YOU FUCK")
 
     def merge(self):
         r = npr.choice(self.state[1:])
-        print(r, "merrrge")
+        # print(r, "merrrge")
         self.random_remove_val(r)
         s = npr.choice(range(len(self.state[1:])))+1
         self.state[s] = self.state[s]+r
@@ -281,17 +284,17 @@ class StateVector:
         try:
             self.state = np.delete(self.state, inpt)
         except:
-            print("Non-index delete not implemented yet")
+            # print("Non-index delete not implemented yet")
             raise
 
     def random_remove_val(self, val):
         try:
-            print("here")
+            # print("here")
             index = npr.choice(np.argwhere(self.state == val).T[0])
-            print("random remove index: ", index)
+            # print("random remove index: ", index)
             while(index != 0):
                 index = npr.choice(np.argwhere(self.state == val).T[0])
-            print("random remove index: ", index)
+            # print("random remove index: ", index)
             self.state = np.delete(self.state, index)
         except:
             print("heres what was going on")

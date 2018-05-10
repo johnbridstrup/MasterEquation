@@ -4,39 +4,51 @@ utils=port.import_module('utils.utes')
 k=port.import_module('kernels2')
 import KMC
 import sys
+import copy
+from shutil import copyfile
 import os
 import plistlib as pll
+from abc import ABC,abstractmethod, ABCMeta, abstractproperty, abstractproperty
 
-
-
+class ModelInterface(ABC):
+    def __init__(self):
+        self.mechanisms=None
+    @abstractmethod
+    def model_mechanisms(self):
+        print(self.mechanisms)
 class my_model:
-    def __init__(self,state,*args,**kwargs):
+    def __init__(self,*args,**kwargs):
         self.params=None
         self.load_config()
-        rates=self.params['rates']
-        proteins=self.params['proteins']
-        nc=proteins['nucleus']
-        M=k.Monomers(proteins['monomers'])
+        print("my model prms",self.params)
+        self.rates=self.params['rates']
+        print("my model rts",self.rates)
+        self.proteins=self.params['proteins']
+        self.nc=self.proteins['nucleus']
         self.output_files=self.params['simulation']['outputs']
-        x=sv.StateVector(M(),delete_zeros=True)
-        model=KMC.Model(x,nc)
+        self.M=self.proteins['monomers']
+        self.state=sv.StateVector(self.M,delete_zeros=True)
+        self.model=KMC.Model(self.state,self.nc)
 
-        add=k.MonomerAddition(rates[0],nc)
-        sub=k.MonomerSubtraction(rates[1],nc)
-        nuc=k.Nucleation(rates[4],nc)
-        frag=k.Fragmentation(rates[4],nc)
-        coag=k.Coagulation(rates[3],nc)
-        # print(x)
-        model.add_propensity(add)
-        model.add_propensity(sub)
-        model.add_propensity(nuc)
-        model.add_propensity(frag)
-        model.add_propensity(coag)
-        model.add_mechanisms(sv.SmoluchowskiModel(x,nc))
-        
+        add=k.MonomerAddition(self.rates[0],self.nc)
+        sub=k.MonomerSubtraction(self.rates[1],self.nc)
+        nuc=k.Nucleation(self.rates[4],self.nc)
+        frag=k.Fragmentation(self.rates[4],self.nc)
+        coag=k.Coagulation(self.rates[3],self.nc)
+        # print(self.state)
+        self.model.add_propensity(add)
+        self.model.add_propensity(sub)
+        self.model.add_propensity(nuc)
+        self.model.add_propensity(frag)
+        self.model.add_propensity(coag)
+        self.model.add_mechanisms(sv.SmoluchowskiModel(self.state,self.nc))
+        print("my model model",self.model)
+    def getModel(self):
+        return self.model    
 
     def load_config(self):
         self.params=load_config()
+        
     
 def load_config():
     params=utils.load_config(utils.wd()+'/utils/input.data')
@@ -44,8 +56,12 @@ def load_config():
 
 class StateSimulation:
     def __init__(self):
-        self.model=my_model
-    def Simulate(self):
+        the_model=my_model()
+        self.model=the_model.getModel()
+        print("SS model",self.model)
+        self.fn=sys.argv[1]
+        self.path=utils.wd()+'/results/'+self.fn+'/'
+    def simulate(self):
         for i in range(int(sys.argv[2])):
             looping=True
             countr=0
@@ -64,19 +80,23 @@ class StateSimulation:
                 if countr>300:
                     looping = False
 
-
-            fn=sys.argv[1]
-            os.makedirs(utils.wd()+'/results/'+fn, mode=0o777, exist_ok=True)
-            # self.model.data.save(utils.wd()+'/results/'+fn+'/'+fn+str(i)+'.json',self.model.data_list)
-            self.model.save(utils.wd()+'/results/'+fn+'/'+fn+str(i)+'.json')
-            x=sv.StateVector([500],delete_zeros=True)
-            self.model=KMC.Model(x,3)
-            self.model.add_propensity(add)
-            self.model.add_propensity(sub)
-            self.model.add_propensity(nuc)
-            self.model.add_propensity(frag)
-            self.model.add_propensity(coag)
-            self.model.add_mechanisms(sv.SmoluchowskiModel(x,3))
+            path=copy.copy(self.path)
+            fn=copy.copy(self.fn)
+            
+            os.makedirs(path, exist_ok=True)
+            self.model.save(path+fn+str(i)+'.json')
+            self.model=my_model().getModel()
+    def __call__(self):
+        self.simulate()
 
 if __name__ == '__main__':
-    pass
+    sim=StateSimulation()
+    #sim()
+# x=sv.StateVector([500],delete_zeros=True)
+# self.model=KMC.Model(x,3)
+# self.model.add_propensity(add)
+# self.model.add_propensity(sub)
+# self.model.add_propensity(nuc)
+# self.model.add_propensity(frag)
+# self.model.add_propensity(coag)
+# self.model.add_mechanisms(sv.SmoluchowskiModel(x,3))
