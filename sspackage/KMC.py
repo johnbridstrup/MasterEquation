@@ -241,8 +241,8 @@ class Model:
         self.P=[]
         self.summed_P_vector=[]
         for i in self.propensities:
-            print(i(self.state.state))
-            print(i)
+            # print(i(self.state.state))
+            # print(i)
             self.P.append(i(self.state.state))
         for i in self.P:
             try:

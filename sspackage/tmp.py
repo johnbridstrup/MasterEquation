@@ -11,9 +11,10 @@ import matplotlib
 matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import glob
+from contextlib import ExitStack
 
 
-
+#class StateSimFolder:
 # def holder(*args):
 #     print("placeholder until {} is implemented".format(str(args)))
 # class Loop:

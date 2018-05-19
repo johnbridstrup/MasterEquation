@@ -1,17 +1,24 @@
 #! kernels.py
 import KMC
 import statevector as sv
-from abc import ABC,abstractmethod
+from abc import ABC, abstractmethod
 from functools import wraps
+
 
 def avo():
     return 6.022*10**23
+
+
 def RateError(Exception):
     pass
+
+
 def NoRatesError(RateError):
     pass
+
+
 def RateTransformError(RateError):
-   pass
+    pass
 # def call_later(f):
 #     @wraps(f)
 #     def wrapper(*args, **kwargs):
@@ -65,7 +72,7 @@ def RateTransformError(RateError):
 #         self.kwargs=kwargs
 #     @abstractmethod
 #     def __call__(self,R):
-#         pass      
+#         pass
 # def default_rates():
 #     R={}
 #     R['a']=1
@@ -81,105 +88,129 @@ def RateTransformError(RateError):
 # def I(inp,*ins,**kwins):
 #     return inp
 # # class IRates(Rates):
-# #     def     
+# #     def
+
 
 def factorial(n):
-    if n<1:
+    if n < 1:
         return 1
     else:
-        out=n*factorial(n-1)
+        out = n*factorial(n-1)
         return out
-def choose(n,k):
-    if n>k:
+
+
+def choose(n, k):
+    if n > k:
         return factorial(n)/(factorial(k)*factorial(n-k))
     else:
         return 0.0
-    
+
 
 class Monomers:
-    def __init__(self,M=500):
-        self.M=M
+    def __init__(self, M=500):
+        self.M = M
+
     def __call__(self):
         return [self.M]
+
+
 class RateTransform(ABC):
-    def __init__(self,f,**kwargs):
-        self.freq=None
+    def __init__(self, f, **kwargs):
+        self.freq = None
         # self.Volume=None
-        self.params=kwargs
-        self.bulkrate=f
+        self.params = kwargs
+        self.bulkrate = f
         # print("here3")
-    def __call__(self,**kwargs):
+
+    def __call__(self, **kwargs):
         return self.freq
+
     @abstractmethod
     def transform(self):
         pass
 
+
 class Bimolecular(RateTransform):
-    def __init__(self,f,same=False,**kwargs):
-        super().__init__(f,**kwargs)
+    def __init__(self, f, same=False, **kwargs):
+        super().__init__(f, **kwargs)
         # print("here2")
         self.transform()
-        self.same=same
+        self.same = same
+
     def transform(self):
-        self.freq=self.bulkrate*self.params['c']/self.params['M']
-    def __call__(self,**kwargs):
+        self.freq = self.bulkrate*self.params['c']/self.params['M']
+
+    def __call__(self, **kwargs):
         return self.freq
     # @property
     # def Volume(self):
     #     pass
+
+
 class N_Molecular(RateTransform):
-    def __init__(self, f,M=500,c=1,nc=3,same=False):
-        super().__init__(f,M=500,c=1,nc=3,same=same)
+    def __init__(self, f, M=500, c=1, nc=3, same=False):
+        super().__init__(f, M=500, c=1, nc=3, same=same)
         print("nmol")
         self.transform()
+
     def transform(self):
         # print("nmoltrans")
-        nn=self.bulkrate
+        nn = self.bulkrate
         # print(nn)
         if self.params['same']:
             for i in range(self.params['nc']):
-                nn*=(self.params['M']-i)
-            self.freq=nn
+                nn *= (self.params['M']-i)
+            self.freq = nn
         else:
-            raise ValueError('uhhhhh idk havent implemented it') 
+            raise ValueError('uhhhhh idk havent implemented it')
+
     def __call__(self):
-        return self.freq     
+        return self.freq
+
+
 class default_transform(RateTransform):
     def transform(self):
-        self.freq=self.bulkrate
+        self.freq = self.bulkrate
+
+
 class Unimolecular(default_transform):
     pass
+
+
 class Kernel(ABC):
-    def __init__(self, f, bulk_transform=default_transform,**kwargs):
-        self.bulk_transform=bulk_transform
-        self.freq=None
-        self.bulkrate=f
-        self.propensities=[]
+    def __init__(self, f, bulk_transform=default_transform, **kwargs):
+        self.bulk_transform = bulk_transform
+        self.freq = None
+        self.bulkrate = f
+        self.propensities = []
         try:
             # print("here1")
-            self.freq=bulk_transform(self.bulkrate,**kwargs)
+            self.freq = bulk_transform(self.bulkrate, **kwargs)
         except:
             # print("Jawn didn't calculate propensity")
-            self.freq=self.bulkrate
-    def add_propensity(self,prop,label=None):
+            self.freq = self.bulkrate
+
+    def add_propensity(self, prop, label=None):
         if label is None:
             label = prop.__name__
         try:
-            for key,val in prop.items:
+            for key, val in prop.items:
                 self.propensities.append(val)
         except:
             try:
-                [self.propensities.append(item) for label,item in prop.items()]
+                [self.propensities.append(item)
+                 for label, item in prop.items()]
             except:
                 try:
                     self.propensities.append(prop)
                 except:
                     # print('propensity adding is broked')
                     raise
-    
+
+
 class MonomerAddition(Kernel):
-    def __init__(self, f, nc, bulk_transform=Bimolecular,*args, **kwargs):
-        super().__init__(f,bulk_transform,**kwargs)
+    def __init__(self, f, nc, bulk_transform=Bimolecular, *args, **kwargs):
+        super().__init__(f, bulk_transform, **kwargs)
         self.nc = nc
 
     def __call__(self, s):
@@ -190,12 +221,14 @@ class MonomerAddition(Kernel):
             else:
                 return 0.0
         except:
-            return 0.0                          
+            return 0.0
+
+
 class Coagulation(Kernel):
     def __init__(self, f, nc, bulk_transform=Bimolecular, *args, **kwargs):
-        super().__init__(f, bulk_transform,**kwargs)
+        super().__init__(f, bulk_transform, **kwargs)
         self.index_pairs = []
-        
+
     def __call__(self, s):
         try:
             outp = []
@@ -211,9 +244,11 @@ class Coagulation(Kernel):
                 return 0.0
         except:
             return 0.0
+
+
 class Fragmentation(Kernel):
     def __init__(self, f, nc, bulk_transform=None, *args, **kwargs):
-        super().__init__(f,bulk_transform,**kwargs)
+        super().__init__(f, bulk_transform, **kwargs)
 
     def __call__(self, s):
         try:
@@ -228,12 +263,13 @@ class Fragmentation(Kernel):
         except:
             return 0.0
 
+
 class Nucleation(Kernel):
-    def __init__(self, f, nc,bulk_transform=N_Molecular,**kwargs):
-        super().__init__(f,bulk_transform,M=kwargs['M'],nc=nc,**kwargs)
+    def __init__(self, f, nc, bulk_transform=N_Molecular, **kwargs):
+        super().__init__(f, bulk_transform, M=kwargs['M'], nc=nc, **kwargs)
         self.nc = nc
         try:
-            self.freq = self.freq *(kwargs["c"]/kwargs["M"])**self.nc
+            self.freq = self.freq * (kwargs["c"]/kwargs["M"])**self.nc
         except:
             pass
 
@@ -253,9 +289,11 @@ class Nucleation(Kernel):
         except Exception as e:
             # print("catchin some't ", e)
             return 0.0
+
+
 class MonomerSubtraction(Kernel):
-    def __init__(self, f, bulk_transform=Unimolecular,*args, **kwargs):
-        super().__init__(f,bulk_transform)
+    def __init__(self, f, bulk_transform=Unimolecular, *args, **kwargs):
+        super().__init__(f, bulk_transform)
 
     def __call__(self, s, **kwargs):
         try:
@@ -265,109 +303,139 @@ class MonomerSubtraction(Kernel):
                 return 0.0
         except:
             return 0.0
+
+
 class Propensities:
-    def __init__(self,props,names=None):
-        self.propensities={}
+    def __init__(self, props, names=None):
+        self.propensities = {}
         try:
-            for key,val in props.items():
-                self.propensities[key]=val
+            for key, val in props.items():
+                self.propensities[key] = val
         except:
             try:
-                for name,prop in zip(names,props):
-                    self.propensities[name]=prop
+                for name, prop in zip(names, props):
+                    self.propensities[name] = prop
             except:
-                try: 
-                    for index,prop in zip(range(len(props)),props):
-                        self.propensities[index]=prop
+                try:
+                    for index, prop in zip(range(len(props)), props):
+                        self.propensities[index] = prop
                 except:
                     try:
-                        self.propensities[names]=props
+                        self.propensities[names] = props
                     except:
                         try:
                             assert(type(props) != list)
-                            self.propensities[0]=props
+                            self.propensities[0] = props
                         except:
                             pass
                             # print("WTF is this?: ",props)
 
+
 class betterKernel(ABC):
-    def __init__(self,bulk_rate_constant,**kwargs):
-        self.bulk_rate_constant=bulk_rate_constant
-        self.params=kwargs
-        self.propensity=0.0
-        self.probability=0.0
+    def __init__(self, bulk_rate_constant, **kwargs):
+        self.bulk_rate_constant = bulk_rate_constant
+        self.params = kwargs
+        self.propensity = 0.0
+        self.probability = 0.0
+
     @abstractmethod
     def transform(self):
         pass
+
     def __repr__(self):
         return repr(self.propensity)
+
     def __str__(self):
         return str(self.propensity)
-    def __call__(self,s):
+
+    def __call__(self, s):
         return self.propensity
+
+
 class MonAdd(betterKernel):
-    def __init__(self,bulk_rate_constant,**kwargs):
-        super().__init__(bulk_rate_constant,**kwargs)
+    def __init__(self, bulk_rate_constant, **kwargs):
+        super().__init__(bulk_rate_constant, **kwargs)
         self.transform()
+
     def transform(self):
-        self.propensity=self.bulk_rate_constant*self.params['c']/self.params['M']
-    def __call__(self,s):
-        if len(s)>1:
-            self.probability=sum([self.propensity*i*s[0] for i in s[1:]])
+        self.propensity = self.bulk_rate_constant * \
+            self.params['c']/self.params['M']
+
+    def __call__(self, s):
+        if len(s) > 1:
+            self.probability = sum([self.propensity*i*s[0] for i in s[1:]])
             return self.probability
         else:
             return 0.0
-    
+
+
 class MonSub(betterKernel):
-    def __init__(self,bulk_rate_constant,**kwargs):
-        super().__init__(bulk_rate_constant,**kwargs)
-        self.propensity=bulk_rate_constant
+    def __init__(self, bulk_rate_constant, **kwargs):
+        super().__init__(bulk_rate_constant, **kwargs)
+        self.propensity = bulk_rate_constant
+
     def transform(self):
         pass
-    def __call__(self,s):
-        if len(s)>1:
-            self.probability=self.propensity*2*(len(s)-1)
+
+    def __call__(self, s):
+        if len(s) > 1:
+            self.probability = self.propensity*2*(len(s)-1)
             return self.probability
         else:
             return 0.0
+
+
 class Coag(betterKernel):
-    def __init__(self,bulk_rate_constant,**kwargs):
-        super().__init__(bulk_rate_constant,**kwargs)
+    def __init__(self, bulk_rate_constant, **kwargs):
+        super().__init__(bulk_rate_constant, **kwargs)
         self.transform()
+
     def transform(self):
-        self.propensity=self.propensity=self.bulk_rate_constant*self.params['c']/self.params['M']
-    def __call__(self,s):
-        L=len(s)
-        if L>2:
-            self.probability=self.propensity*(factorial(L)/2)
+        self.propensity = self.propensity = self.bulk_rate_constant * \
+            self.params['c']/self.params['M']
+
+    def __call__(self, s):
+        L = len(s)
+        if L > 2:
+            self.probability = self.propensity*(factorial(L)/2)
             return self.probability
         else:
             return 0.0
+
+
 class Nuc(betterKernel):
-    def __init__(self,bulk_rate_constant,**kwargs):
-        super().__init__(bulk_rate_constant,**kwargs)
+    def __init__(self, bulk_rate_constant, **kwargs):
+        super().__init__(bulk_rate_constant, **kwargs)
         self.transform()
+
     def transform(self):
-        self.propensity=self.bulk_rate_constant
-        self.propensity*=(self.params['c']/(self.params['M']))**self.params['nc']
-    def __call__(self,s):
-        if s[0]>self.params['nc']:
-            self.probability=self.propensity
+        self.propensity = self.bulk_rate_constant
+        self.propensity *= (self.params['c'] /
+                            (self.params['M']))**self.params['nc']
+
+    def __call__(self, s):
+        if s[0] > self.params['nc']:
+            self.probability = self.propensity
             for i in range(self.params['nc']):
-                self.probability*=(s[0]-i)
+                self.probability *= (s[0]-i)
             return self.probability
         else:
             return 0.0
+
+
 class Frag(betterKernel):
-    def __init__(self,bulk_rate_constant,**kwargs):
+    def __init__(self, bulk_rate_constant, **kwargs):
         super().__init__(bulk_rate_constant)
-        self.propensity=self.bulk_rate_constant
+        self.propensity = self.bulk_rate_constant
+
     def transform(self):
-        self.propensity=self.bulk_rate_constant
-    def __call__(self,s):
-        if len(s)>1:
+        self.propensity = self.bulk_rate_constant
+
+    def __call__(self, s):
+        if len(s) > 1:
             try:
-                self.probability = [(i-3)*self.propensity for i in  s[1:] if i>3]
+                self.probability = [
+                    (i-3)*self.propensity for i in s[1:] if i > 3]
                 return self.probability
             except:
                 return [0]
