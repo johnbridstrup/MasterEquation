@@ -322,9 +322,22 @@ class Model:
         # self.data["kurtosis"].append(self.state.kurtosis())
         # self.data["histogram"].append(self.state.histogram())
         self.data["t_steps"].append(self.t_step)
-        self.data["t"].append(sum(self.data["t_steps"]))
+        # try:
+        #     print("step: {}".format(self.t_step))
+        #     print("last: {}".format(self.data['t'][-1]))
+        #     newt=self.t_step+self.data['t'][-1]
+        #     print("newt: {}".format(newt))
+        # except:
+        #     newt=self.data['t_steps']
+        # self.data["t"].append(newt)
         # self.data["state"].append(copy.deepcopy(self.state))
     def save(self, path=None):
+        
+        for i,dt in enumerate(self.data['t_steps']):
+            try:
+                self.data['t'].append(self.data['t'][i-1]+dt)
+            except:
+                self.data['t']=[dt]
         if path is not None:
             os.makedirs(os.path.dirname(path),exist_ok=True)
             self.data.save(path)

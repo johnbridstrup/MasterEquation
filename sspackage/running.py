@@ -10,7 +10,7 @@ import os
 # JUST CHANGE THIS FILE NAME NOT THE PATHS
 #^ ==============================================================================
 #? ==============================================================================
-runs_name = "schoot1"
+runs_name = "test1"
 runs_num = 100
 #? ==============================================================================
 #^ ==============================================================================
@@ -31,14 +31,15 @@ utils_dir=str(app_dir)+"utils/"
 params=pll.readPlist(utils_dir+'input.data')
 os.makedirs(runs_dir,exist_ok=True)
 os.makedirs(utils_dir,exist_ok=True)
-
+# print(runs_dir)
+# print(utils_dir)
 
 rates=params['rates']
-rates[1]=10**-3
+rates[1]=10**-9
 rates[3]=10**-4
-a=(2,3,2)
+a=(0,1,2)
 asw=np.logspace(a[0],a[1],a[2])
-k=(-3,-1,2)
+k=(-2,-1,2)
 ksw=np.logspace(k[0],k[1],k[2])
 for aa in asw:
     rates[0]=aa
@@ -50,8 +51,10 @@ for aa in asw:
         #fn2=runs_name+ext2
         rates[4]=kk
         params['rates']=rates
+        params['simulation']['runs']=runs_num
         # params['simulation'][]
         os.makedirs(runs_dir+fn+"/",exist_ok=True)
+        os.makedirs(runs_dir+fn+"/averaged/",exist_ok=True)
         with open(utils_dir+'input.data','wb') as f:
             pll.dump(params,f)
         with open(runs_dir+fn+"/input.data",'wb') as f:

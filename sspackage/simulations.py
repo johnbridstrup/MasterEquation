@@ -5,6 +5,7 @@ k=port.import_module('kernels')
 import KMC
 import sys
 import os
+import numpy as np
 from shutil import copyfile
 
 
@@ -19,6 +20,7 @@ def simulation(fn):
     #copyfile(utils.wd()+'/utils/input.data',path+'_input.data')
     rates=params['rates']
     proteins=params['proteins']
+    sim_params=params['simulation']
     nc=proteins['nucleus']
     #FINISH output_files=params['simulation']['outputs']
     MM=proteins['monomers']
@@ -27,6 +29,12 @@ def simulation(fn):
     x=sv.StateVector(M(),delete_zeros=True)
     global model
     model=KMC.Model(x,nc)
+    t0=sim_params['t0']
+    tf=sim_params['tf']
+    bins=sim_params['bins']
+    bins+=1
+    dt=(tf-t0)/bins
+    t=np.linspace(t0,tf,bins)
     
     add=k.MonAdd(rates[0],M=MM,c=proteins['concentration']['value'])
     sub=k.MonSub(rates[1])
@@ -45,9 +53,20 @@ def simulation(fn):
     # print(model.mechanisms)
     X=[]
     Y=[]
-    
+    # last=binstogram[0]
+    # model.calculate_probability()
+    # model.choose()
+    # model.time_step()
+    # model.advance()
+    # binstogram=np.zeros((bins,MM))
+    # tmp=np.zeros(MM)
+    # curr=binstogram[0]
     looping=True
     countr=0
+    # bincounter=0
+    # while model.data['t'][-1]>=t[bincounter]:
+    #     binstogram[bincounter][0]+=MM
+    #     bincounter+=1
     while(looping):
         X.append(x)
         countr+=1

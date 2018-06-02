@@ -93,7 +93,7 @@ class DasBinner:
                                for i in kanal.array_ify(df1['polymers'])])
             self.monomer_data.append(
                 [i[0] for i in kanal.array_ify(df1['polymers'])])
-            self.dtdata.append(kanal.array_ify(df1['t_steps']))
+            #self.dtdata.append(kanal.array_ify(df1['t_steps']))
             self.tsdata.append(kanal.array_ify(DasBinner._t_shift(df1)))
             self.sets += 1
         except:
@@ -104,7 +104,7 @@ class DasBinner:
                         for i in kanal.array_ify(df['polymers'])])
                     self.monomer_data.append(
                         [i[0] for i in kanal.array_ify(df['polymers'])])
-                    self.dtdata.append(kanal.array_ify(df['t_steps']))
+                    #self.dtdata.append(kanal.array_ify(df['t_steps']))
                     self.tsdata.append(kanal.array_ify(DasBinner._t_shift(df)))
                     self.sets += 1
             except:
@@ -116,7 +116,7 @@ class DasBinner:
                                    for i in kanal.array_ify(df['polymers'])])
                 self.monomer_data.append(
                     [i[0] for i in kanal.array_ify(df['polymers'])])
-                self.dtdata.append(kanal.array_ify(df['t_steps']))
+                #self.dtdata.append(kanal.array_ify(df['t_steps']))
                 self.tsdata.append(kanal.array_ify(DasBinner._t_shift(df)))
                 self.sets += 1
 
@@ -128,7 +128,7 @@ class DasBinner:
                                    for i in kanal.array_ify(df['polymers'])])
                 self.monomer_data.append(
                     [i[0] for i in kanal.array_ify(df['polymers'])])
-                self.dtdata.append(kanal.array_ify(df['t_steps']))
+                #self.dtdata.append(kanal.array_ify(df['t_steps']))
                 self.tsdata.append(kanal.array_ify(DasBinner._t_shift(df)))
                 self.sets += 1
                 self._started_generating=False
