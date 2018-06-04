@@ -286,7 +286,7 @@ class Nucleation(Kernel):
                 return prod
             else:
                 return 0.0
-        except Exception as e:
+        except:
             # print("catchin some't ", e)
             return 0.0
 

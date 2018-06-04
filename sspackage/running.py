@@ -10,8 +10,16 @@ import os
 # JUST CHANGE THIS FILE NAME NOT THE PATHS
 #^ ==============================================================================
 #? ==============================================================================
-runs_name = "test1"
-runs_num = 100
+runs_name = "middle_sweep_1"
+runs_num = 200
+end_time = 500.0
+start_time = 0.0
+"""name, repeats
+
+the real end and start times (arbitrary units or based on rate constants)
+
+"""
+
 #? ==============================================================================
 #^ ==============================================================================
 # UNLESS YOU REALLY DGAF IM NOT YOUR DAD
@@ -35,21 +43,24 @@ os.makedirs(utils_dir,exist_ok=True)
 # print(utils_dir)
 
 rates=params['rates']
-rates[1]=10**-9
-rates[3]=10**-4
-a=(0,1,2)
+params['simulation']['tf']=end_time
+params['simulation']['t0']=start_time
+rates['subtraction']=10**-5
+rates['fragmentation']=rates['subtraction']
+#rates['fragmentation']=10**-5
+a=(-2,3,6)
 asw=np.logspace(a[0],a[1],a[2])
-k=(-2,-1,2)
+k=(-5,1,6)
 ksw=np.logspace(k[0],k[1],k[2])
 for aa in asw:
-    rates[0]=aa
-    rates[2]=aa
+    rates['addition']=aa
+    rates['coagulation']=aa
     for kk in ksw:
         ext="_aa_{}_kk_{}.strup".format(aa,kk)
         #ext2="_aa_{}_kk_{}.up".format(aa,kk)
         fn=runs_name+ext
         #fn2=runs_name+ext2
-        rates[4]=kk
+        rates['nucleation']=kk
         params['rates']=rates
         params['simulation']['runs']=runs_num
         # params['simulation'][]

@@ -316,21 +316,9 @@ class Model:
             self.mechanisms.run("merge")
 
         self.data["polymers"].append(copy.deepcopy(self.state.state[:]))
-        # self.data["mass"].append(self.state.sum())
-        # self.data["number"].append(self.state.length())
-        # self.data["skew"].append(self.state.skew())
-        # self.data["kurtosis"].append(self.state.kurtosis())
-        # self.data["histogram"].append(self.state.histogram())
+        
         self.data["t_steps"].append(self.t_step)
-        # try:
-        #     print("step: {}".format(self.t_step))
-        #     print("last: {}".format(self.data['t'][-1]))
-        #     newt=self.t_step+self.data['t'][-1]
-        #     print("newt: {}".format(newt))
-        # except:
-        #     newt=self.data['t_steps']
-        # self.data["t"].append(newt)
-        # self.data["state"].append(copy.deepcopy(self.state))
+        
     def save(self, path=None):
         
         for i,dt in enumerate(self.data['t_steps']):

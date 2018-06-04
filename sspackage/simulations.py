@@ -29,18 +29,16 @@ def simulation(fn):
     x=sv.StateVector(M(),delete_zeros=True)
     global model
     model=KMC.Model(x,nc)
-    t0=sim_params['t0']
+    #t0=sim_params['t0']
     tf=sim_params['tf']
-    bins=sim_params['bins']
-    bins+=1
-    dt=(tf-t0)/bins
-    t=np.linspace(t0,tf,bins)
+    # bins=sim_params['bins']
+    # bins+=1
     
-    add=k.MonAdd(rates[0],M=MM,c=proteins['concentration']['value'])
-    sub=k.MonSub(rates[1])
-    coag=k.Coag(rates[2],M=MM,c=proteins['concentration']['value'])
-    frag=k.Frag(rates[3])
-    nuc=k.Nuc(rates[4],nc=nc,M=MM,c=proteins['concentration']['value'])
+    add=k.MonAdd(rates['addition'],M=MM,c=proteins['concentration']['value'])
+    sub=k.MonSub(rates['subtraction'])
+    coag=k.Coag(rates['coagulation'],M=MM,c=proteins['concentration']['value'])
+    frag=k.Frag(rates['fragmentation'])
+    nuc=k.Nuc(rates['nucleation'],nc=nc,M=MM,c=proteins['concentration']['value'])
     
     
     # print(x)
@@ -63,24 +61,20 @@ def simulation(fn):
     # curr=binstogram[0]
     looping=True
     countr=0
+    current_time=0.0
     # bincounter=0
     # while model.data['t'][-1]>=t[bincounter]:
     #     binstogram[bincounter][0]+=MM
     #     bincounter+=1
     while(looping):
         X.append(x)
-        countr+=1
+        #countr+=1
         model.calculate_probability()
         model.choose()
         model.time_step()
         model.advance()
-        # print(x)
-        #inp=input("0 to quit: ")
-        # if inp=="0":
-        #     looping=False
-        # if inp=="1":
-        #     print(model.data)
-        if countr>300:
+        current_time+=model.t_step
+        if countr>300 or current_time>tf:
             looping = False
         X.append(model.data)
     Y.append(X[:])

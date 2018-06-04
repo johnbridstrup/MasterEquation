@@ -198,9 +198,9 @@ class DataHandler:
                 conc=prfx*params['concentration']['value']
                 nc=params['nucleus']
                 M=params['monomers']
-                a=self.rates_dict[i][index][0]
+                a=self.rates_dict[i][index]['addition']
 
-                k=self.rates_dict[i][index][4]
+                k=self.rates_dict[i][index]['nucleation']
                 self.ka[i].append(a*conc/M)
                 print(self.ka)
                 self.kn[i].append(k*(conc/M)**(nc-1))
@@ -280,7 +280,7 @@ class DataHandler:
             for j in self.data[i].keys():
                 self.series_list[i][j]=[]
                 self.monomer_series[i][j]=[]
-                for index,df in enumerate(self.data[i][j]):
+                for dex,df in enumerate(self.data[i][j]):
                     sers=[]
                     sers_t=[]
                     df['t']=pd.to_timedelta(df['t'],unit='s')
@@ -294,8 +294,9 @@ class DataHandler:
                                 sers.append([pol])
                                 sers_t.append([tt])
                     self.series_list[i][j].append([pd.Series(data=pols,index=ts) for pols,ts in zip(copy(sers),copy(sers_t))])
-                    self.monomer_series[i][j].append(self.series_list[i][j][index][0].copy())
+                    self.monomer_series[i][j].append(self.series_list[i][j][dex][0].copy())
                     del self.series_list[i][j][-1][0]
+                self.series_list[i][j].sort(key=lambda x: min([min(ii.index.values) for ii in x]))
     def full_time(self):
         self.times={}
         for i in self.sets:
@@ -312,13 +313,25 @@ class DataHandler:
             for j in self.data[i].keys():
                 self.chunk_time[i][j]=[]
                 for k in range(0,len(self.times[i][j].values),n):
-                    self.chunk_time[i][j].append(self.times[i][j].values[k:k+n])
+                    dumby_chunk=self.times[i][j].values[k:k+n]
+                    sorteddflist= sorted(dumby_chunk,key=lambda x:x[0].min(axis=0))
+                    self.chunk_time[i][j].append(sorteddflist)
+    def histogram_factory(self,run,pset):
+        return HistogramGenerator(self.chunk_time[run][pset],self.series_list[run][pset],self.proteins_dict[run][pset])
+    def pre_hist_polymers(self,run,pset):
+        return BinnedPolymers(self.chunk_time[run][pset],self.series_list[run][pset],self.proteins_dict[run][pset])
     def hist_generator(self,tbin=100,set=(0,0)):
         self.chunktime(tbin)
         run_name=self.sets[set[0]]
         paramset=set[1]
         L=self.proteins_dict[run_name][paramset]['monomers']
-        
+        try:
+            self.histograms[run_name][paramset]=[]
+        except:
+            try:
+                self.histograms[run_name]={paramset:[]}  
+            except:
+                self.histograms={run_name:{paramset:[]}}
         for times in self.chunk_time[run_name][paramset]:
             hist_slice=np.zeros(L)
             pols=[]
@@ -327,15 +340,25 @@ class DataHandler:
                 for sers in self.series_list[run_name][paramset]:
                     for ser in sers:
                         try:
-                            pols.append(ser.loc[t])
+                            p=ser.loc[t].values
+                            for pp in p:
+                                pols.append(pp)
                             break
                         except:
-                            pass
-            hh=np.histogram(np.array(pols),bins=L-1,range=(1,L))
-            for i in pols:
-                print(i)
-                hist_slice[i-1]+=1
-            yield (hist_slice,hh)
+                            try:
+                                p=ser.loc[t].values
+                                pols.append(p)
+                                break
+                            except:
+                                pass
+            # print(pols)
+            # print(L)
+            hist_slice=np.histogram(np.array(pols),bins=L-1,range=(1,L))
+            self.histograms[run_name][paramset].append(hist_slice)
+            
+            # for i in pols:
+            #     hist_slice[i-1]+=1
+            yield hist_slice
                     
     def time_index(self):
         
@@ -481,7 +504,65 @@ class DataHandler:
         self.make_series()
         self.full_time()
         self.chunktime()
+class HistogramGenerator:
+    def __init__(self,chunks, series_set, params): ## params should be proteins_dict[run][set] same w/ chunks and series
+        self.params=params
+        self.t_chunks=chunks
+        self.data=series_set
+        self.slices={}
+    def __call__(self,t_bin,**kwargs):
+        try:
+            return self.slices[t_bin]
+        except:
+            L=self.params['monomers']
+            pols=[]
+            for t in self.t_chunks[t_bin]:
+                for sers in self.data:
+                    for ser in sers:
+                        try:
+                            p=ser.loc[t].values
+                            for pp in p:
+                                pols.append(pp)
+                            break
+                        except:
+                            try:
+                                p=ser.loc[t].values
+                                pols.append(p)
+                                break
+                            except:
+                                pass
 
+            self.slices[t_bin] = np.histogram(np.array(pols),bins=L-1,range=(1,L))
+            return self.slices[t_bin]
+class BinnedPolymers:
+    def __init__(self, chunks, series_set, params):
+        self.params=params
+        self.t_chunks=chunks
+        self.data=series_set
+        self.polymers_binned={}
+    def __call__(self,t_bin,**kwargs):
+        try:
+            return self.polymers_binned[t_bin]
+        except:
+            pols=[]
+            for t in self.t_chunks[t_bin]:
+                for sers in self.data:
+                    for ser in sers:
+                        try:
+                            p=ser.loc[t].values
+                            for pp in p:
+                                pols.append(pp)
+                            break
+                        except:
+                            try:
+                                p=ser.loc[t].values
+                                pols.append(p)
+                                break
+                            except:
+                                pass
+
+            self.polymers_binned[t_bin] = np.array(pols)
+            return self.polymers_binned[t_bin]
 
 class PolymerTimeSeries:
     def __init__(self,data):
@@ -502,7 +583,7 @@ class PolymerSet:
                     
 
 if __name__=='__main__':
-    data_files=Data_Directory('/results/',names='test1.brid')
+    data_files=Data_Directory('/results/',names='middle_sweep_1.brid')
     data_files._make_master_dict()
     data=DataHandler(data_files)
     data.prep_data()
