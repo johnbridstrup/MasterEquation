@@ -21,15 +21,15 @@
 	<key>rates</key>
 	<dict>
 		<key>addition</key>
-		<real>1000.0</real>
-		<key>coagulation</key>
-		<real>1000.0</real>
-		<key>fragmentation</key>
-		<real>1e-05</real>
-		<key>nucleation</key>
 		<real>10.0</real>
+		<key>coagulation</key>
+		<real>10.0</real>
+		<key>fragmentation</key>
+		<real>1.0</real>
+		<key>nucleation</key>
+		<real>1.0</real>
 		<key>subtraction</key>
-		<real>1e-05</real>
+		<real>1.0</real>
 	</dict>
 	<key>simulation</key>
 	<dict>
