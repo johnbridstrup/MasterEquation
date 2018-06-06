@@ -534,6 +534,8 @@ class HistogramGenerator:
 
             self.slices[t_bin] = np.histogram(np.array(pols),bins=L-1,range=(1,L))
             return self.slices[t_bin]
+    def __len__(self):
+        
 class BinnedPolymers:
     def __init__(self, chunks, series_set, params):
         self.params=params
@@ -560,8 +562,10 @@ class BinnedPolymers:
                                 break
                             except:
                                 pass
-
-            self.polymers_binned[t_bin] = np.array(pols)
+            if t_bin>=0:
+                self.polymers_binned[t_bin] = np.array(pols)
+            else:
+                self.polymers_binned[len(self.t_chunks)]
             return self.polymers_binned[t_bin]
 
 class PolymerTimeSeries:
