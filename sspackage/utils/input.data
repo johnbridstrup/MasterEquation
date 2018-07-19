@@ -14,22 +14,22 @@
 			<real>5.0</real>
 		</dict>
 		<key>monomers</key>
-		<integer>500</integer>
+		<integer>200</integer>
 		<key>nucleus</key>
-		<integer>3</integer>
+		<integer>4</integer>
 	</dict>
 	<key>rates</key>
 	<dict>
 		<key>addition</key>
-		<real>1000.0</real>
+		<real>0.001</real>
 		<key>coagulation</key>
-		<real>1000.0</real>
+		<real>0.001</real>
 		<key>fragmentation</key>
-		<real>1e-05</real>
+		<real>0.001</real>
 		<key>nucleation</key>
-		<real>10.0</real>
+		<real>0.0001</real>
 		<key>subtraction</key>
-		<real>1e-05</real>
+		<real>0.001</real>
 	</dict>
 	<key>simulation</key>
 	<dict>
@@ -42,13 +42,13 @@
 			<string>t</string>
 		</array>
 		<key>runs</key>
-		<integer>200</integer>
+		<integer>10</integer>
 		<key>steps</key>
 		<integer>300</integer>
 		<key>t0</key>
 		<real>0.0</real>
 		<key>tf</key>
-		<real>500.0</real>
+		<integer>2000</integer>
 	</dict>
 	<key>system</key>
 	<dict>

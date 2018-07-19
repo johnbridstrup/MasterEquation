@@ -535,7 +535,7 @@ class HistogramGenerator:
             self.slices[t_bin] = np.histogram(np.array(pols),bins=L-1,range=(1,L))
             return self.slices[t_bin]
     def __len__(self):
-        
+        pass
 class BinnedPolymers:
     def __init__(self, chunks, series_set, params):
         self.params=params
@@ -591,4 +591,4 @@ if __name__=='__main__':
     data_files._make_master_dict()
     data=DataHandler(data_files)
     data.prep_data()
-    histgen=data.hist_generator()
+    #histgen=data.hist_generator()
