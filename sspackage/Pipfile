@@ -10,6 +10,17 @@ pandas = "*"
 matplotlib = "*"
 astropy = "*"
 ipython = "*"
+plotly = "*"
+dash = "==0.21.1"
+dash-renderer = "==0.13.0"
+dash-html-components = "==0.11.0"
+dash-core-components = "==0.24.1"
+bokeh = "*"
+"pyqt5" = "*"
+appjar = "*"
+holoviews = "*"
+pyparsing = "*"
+click = "*"
 
 [dev-packages]
 
