@@ -1,11 +1,12 @@
 import pandas as pd
 import numpy as np
+from enum import Enum,auto
 from pathlib import Path
 import os
 from os.path import splitext
 import plistlib as pll
 import matplotlib
-#matplotlib.use('Agg', force=True)
+matplotlib.use('Agg', force=True)
 import matplotlib.pyplot as plt
 # import collections.abc as cabc
 # import astropy as ap
@@ -162,7 +163,7 @@ class DataHandler:
                 M=prms['proteins']['monomers']
                 NA=6.022*10**23
                 self.vol[i].append(M/(conc*NA))
-                print(self.vol[i],'L')
+        print(self.vol[i],'L')
                 # self.the_data[i]['parameters']['proteins']['volume']=vol
     def split_dict(self):
         self.parameters_dict={}
@@ -193,9 +194,10 @@ class DataHandler:
 
                 k=self.rates_dict[i][index]['nucleation']
                 self.ka[i].append(a*conc/M)
-                print(self.ka)
                 self.kn[i].append(k*(conc/M)**(nc-1))
-                print(self.kn)
+        print(self.ka)
+                
+        print(self.kn)
     def open_files(self):
         self.data={}
         for i in self.sets:
@@ -210,15 +212,17 @@ class DataHandler:
     def get_lists(self,name=None,number=None,dat='polymers'):
         self.poly={}
         self.t={}
-        for name in self.sets:
-            self.poly[name]={}
-            self.t[name]={}
-            for key,df_list in self.data[name].items():
-                self.poly[name][key]=[]
-                self.t[name][key]=[]
+        if name is None:
+            name=self.sets
+        for names in name:
+            self.poly[names]={}
+            self.t[names]={}
+            for key,df_list in self.data[names].items():
+                self.poly[names][key]=[]
+                self.t[names][key]=[]
                 for df in df_list:
-                    self.poly[name][key].append(df['polymers'])
-                    self.t[name][key].append(df['t'])
+                    self.poly[names][key].append(df['polymers'])
+                    self.t[names][key].append(df['t'])
     def fix_polies(self):
         for i in self.sets:
             for key,arr_list in self.poly[i].items():
@@ -262,7 +266,20 @@ class DataHandler:
                     self.master_data[i][j].append(ddff)
                     if nonan:
                         self.noNan_master_data[i][j].append(ddff_noNaN)
-    def make_series(self):
+    def list_sets(self,keys=True):
+        for set_name in self.sets:
+            print("set: \n\n    {}\n".format(set_name))
+            if keys:
+                self.list_keys(set_name,"\t","\n")
+    def list_keys(self,set_name,spacing="",breaking="",pre="",post=""):
+        print("\tkeys:")
+        for key in self.data[set_name].keys():
+            print("        {}".format(key))
+        print("\n")
+
+    def make_series(self,key):
+        pass
+    def make_all_series(self):
         self.series_list={}
         self.monomer_series={}
         for i in self.sets:
@@ -311,6 +328,11 @@ class DataHandler:
         return HistogramGenerator(self.chunk_time[run][pset],self.series_list[run][pset],self.proteins_dict[run][pset])
     def pre_hist_polymers(self,run,pset):
         return BinnedPolymers(self.chunk_time[run][pset],self.series_list[run][pset],self.proteins_dict[run][pset])
+    def get_hist(self,bins=100,index=[0,10,50,99],set=(0,0)):
+        if any((bins<i for i in index)):
+            raise ValueError("bins smaller than at least one index")
+        
+        
     def hist_generator(self,tbin=100,set=(0,0)):
         self.chunktime(tbin)
         run_name=self.sets[set[0]]
@@ -344,7 +366,7 @@ class DataHandler:
                                 pass
             # print(pols)
             # print(L)
-            hist_slice=np.histogram(np.array(pols),bins=L-1,range=(1,L))
+            hist_slice=np.histogram(np.array(pols),bins=L-1,range=(1,L),normed=True)
             self.histograms[run_name][paramset].append(hist_slice)
             
             # for i in pols:
@@ -486,15 +508,33 @@ class DataHandler:
     #             for bindex,hist_slice in enumerate(self.histogram[i][key]):
     #                 for poly_size,summed_value in enumerate(hist_slice):
     #                     self.histogram[i][key][bindex][poly_size]=summed_value/self.parameters_dict[i][int(key)]['simulation']['runs']
-    def prep_data(self):
+    def prep_data(self, *commands):
         self.split_dict()
+        print("a")
+        
         self.open_files()
+        print("b")
+        
         self.get_lists()
+        print("c")
+        
         self.fix_polies()
+        print("d")
+        
         self.make_master()
-        self.make_series()
+        print("e")
+        
+        self.make_all_series()
+        print("f")
         self.full_time()
+        print("g")
         self.chunktime()
+class DataCommands(Enum):
+    LOAD_FILES=auto()
+    SELECT_FOLDER=auto()
+    CONVER_TO_SERIES=auto()
+    PREP_FOR_HISTOGRAM=auto()
+    
 class HistogramGenerator:
     def __init__(self,chunks, series_set, params): ## params should be proteins_dict[run][set] same w/ chunks and series
         self.params=params
@@ -525,6 +565,8 @@ class HistogramGenerator:
 
             self.slices[t_bin] = np.histogram(np.array(pols),bins=L-1,range=(1,L))
             return self.slices[t_bin]
+    def __len__(self):
+        pass
 class BinnedPolymers:
     def __init__(self, chunks, series_set, params):
         self.params=params
@@ -551,8 +593,10 @@ class BinnedPolymers:
                                 break
                             except:
                                 pass
-
-            self.polymers_binned[t_bin] = np.array(pols)
+            if t_bin>=0:
+                self.polymers_binned[t_bin] = np.array(pols)
+            else:
+                self.polymers_binned[len(self.t_chunks)]
             return self.polymers_binned[t_bin]
 
 class PolymerTimeSeries:
@@ -568,12 +612,46 @@ class PolymerSet:
                     self.polymers.append(PolymerTimeSeries(i))
             except:
                 self.polymers.append(PolymerTimeSeries(data))
-            
-            
-                        
-                    
+
+                
+
+def wait(func=None, *args, **kwargs):
+    waiting=True
+    while waiting:
+        waiting = (int(input('0 to continue: '))!=0)
+def get_input(message="input? ", response_list=None):
+    waiting = True
+    while waiting:
+        user_input=input(message)
+        if response_list is not None:
+            waiting = not any([user_input==i for i in response_list])
+        else:
+            waiting = False
+    return user_input
+           
+def prep(name):
+    datafiles=Data_Directory('/results/',names=name+'.brid')
+    datafiles._make_master_dict()
+    data=DataHandler(datafiles)
+    data.prep_data()
+    return (datafiles,data)                    
+
+def get_hists(data,name,slices='all'):
+    if slices=='all':
+        hist_gens={str(ind):gen for ind in range(len())}
+        return [data.histogram_factory(name,num) for i in range(data.bins)]
 
 if __name__=='__main__':
+    print("1")
+    data_files=Data_Directory('/results/',names='yuantest2.brid')
+    print("2")
+    data_files._make_master_dict()
+    print("3")
+    data=DataHandler(data_files)
+    print("4")
+    data.prep_data()
+    print("5")
+    #histgen=data.hist_generator()
     data_files=Data_Directory('large_sweep_1.brid')
     #data_files._make_master_dict()
     # data=DataHandler(data_files)

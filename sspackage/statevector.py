@@ -85,7 +85,11 @@ class Nucleation(ProteinAggregationBase):
 
 class Fragmentation(ProteinAggregationBase):
     def algorithm(self, *args, **kwargs):
+        
         ss = self.state.sum(condition=self.nc)
+        print("ss",ss)
+        print("state",self.state)
+        print("sum",self.state.sum(condition=self.nc))
         pindex = npr.choice(range(ss))
         i = 0
         count = 0
@@ -342,7 +346,7 @@ class StateVector:
     def sum(self, shift=1, condition=None):
         if condition is not None:
             try:
-                return sum([j for j in self.state[shift:] if j > condition])
+                return sum([j for j in self.state[shift:] if j >= condition])
             except:
                 try:
                     return sum([j for j in self.state[shift:] if condition(j)])
