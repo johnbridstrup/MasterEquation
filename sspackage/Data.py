@@ -24,65 +24,35 @@ def ext_with_zeroes(l,mx):
 def df_col2array(df,col,index_sort=True, max_list=10):
     tmp=[df[col][index] for index in range(len(df[col]))]
     ext_with_zeroes(tmp,max_list)
-    return np.array(tmp)    
+    return np.array(tmp)
 def array_ify(unordered_df, maxx=None):
     try:
         larr=[unordered_df[i] for i in range(len(unordered_df))]
-       
+
         L=max([len(i) for i in larr])
-       
+
         [i.extend([0] * (none_max(L,maxx) - len(i))) for i in larr]
         return larr
     except:
         larr=[unordered_df[i] for i in range(len(unordered_df))]
-        
+
         return larr
 
 
 class Data_Directory:
-    def __init__(self,dire=None, **kargs):
-        self._Paths={}
-        self._results_directories={}
-        self._directories={}
-        self._filepaths={}
-        self._paths={}
-        self.CWD=Path.cwd()
-        self.dirs=[]
-        self.active_name=None
-        self.filepaths=[]
-        self.top=None
-        self.run_names=[]
-        self._params={}
-        if dire is not None:
-            
-            try:
-                self.path = os.getcwd() +'/'+ dire
-                self.Path=Path(self.path)
-                self.path_set=True
-                self.Top=dire
-            except:
-                try:
-                    self.Path=Path(dire)
-                    self.path=dire
-                    self.path_set=True
-                except:
-                    self.path_set=False
-        else:
-            self.path_set=False
-        
-        self.full_init(names=kargs['names'])
+    def __init__(self,name):
+        self.run_name=name
+        self.get_all_files(name)
     def full_init(self,**args):
         try:
             self.set_resultspath_subdir(args['names'])
         except:
             for i in args['names']:
                 self.new_run(i)
-        
         self.get_resultspath_directories()
         self.add_dir_to_active()
         self.enum_param_sets()
         self.store_filepaths()
-        
     def set_resultspath_subdir(self,res_sub='no_leading_forwardslash/'):
         try:
             self.active_name=splitext(res_sub)[0]
@@ -114,6 +84,27 @@ class Data_Directory:
         for i in self.resultspath_directories:
             outp=i.parts[-1]
             print(outp)
+    def get_all_files(self, run_name):
+        self.File_Paths={}
+        self.dirs={run_name:[]}
+        self.name_dict={}
+        self.params_dict={}
+        
+        for dir1 in os.listdir(os.getcwd()+'/results/'+run_name):
+            self.name_dict[dir1]={}
+            self.File_Paths[dir1]={}
+            self.params_dict[dir1]={}
+            for dir2 in os.listdir(os.getcwd()+'/results/'+run_name+'/'+dir1):
+                self.name_dict[dir1][dir2]={}
+                self.File_Paths[dir1][dir2]={}
+                self.params_dict[dir1][dir2]={}
+                for dir3 in os.listdir(os.getcwd()+'/results/'+run_name+'/'+dir1+'/'+dir2):
+                    self.name_dict[dir1][dir2][dir3]=[name for name in os.listdir(os.getcwd()+'/results/'+run_name+'/'+dir1+'/'+dir2+'/'+dir3) if os.path.splitext(name)[1] !='.data']
+                    self.File_Paths[dir1][dir2][dir3]=[os.path.join(os.getcwd()+'/results/'+run_name+'/'+dir1+'/'+dir2+'/'+dir3,name) for name in os.listdir(os.getcwd()+'/results/'+run_name+'/'+dir1+'/'+dir2+'/'+dir3) if os.path.splitext(name)[1] != '.data' ]
+                    self.params_dict[dir1][dir2][dir3]=pll.readPlist(os.path.join(os.getcwd()+'/results/'+run_name+'/'+dir1+'/'+dir2+'/'+dir3,'input.data')) 
+                    
+                        
+                    self.dirs[run_name].append(os.getcwd()+'/results/'+run_name+'/'+dir1+'/'+dir2+'/'+dir3)
     def add_dir_to_active(self,the_dir='all'):
         if the_dir=='all':
             self.dirs=[]
@@ -661,3 +652,8 @@ if __name__=='__main__':
     data.prep_data()
     print("5")
     #histgen=data.hist_generator()
+    data_files=Data_Directory('large_sweep_1.brid')
+    #data_files._make_master_dict()
+    # data=DataHandler(data_files)
+    # data.prep_data()
+    # histgen=data.hist_generator()
