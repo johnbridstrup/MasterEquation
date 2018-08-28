@@ -11,8 +11,9 @@ from itertools import product
 # JUST CHANGE THIS FILE NAME NOT THE PATHS
 #^ ==============================================================================
 #? ==============================================================================
-runs_name = "yuantest2"
-runs_num = 10
+runs_name = "yuantest3"
+
+runs_num = 10     
 end_time = 2000
 start_time = 0.0
 mons=200
