@@ -5,7 +5,7 @@ import os
 from os.path import splitext
 import plistlib as pll
 import matplotlib
-#matplotlib.use('Agg', force=True)
+matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 # import collections.abc as cabc
 # import astropy as ap
@@ -587,7 +587,7 @@ class PolymerSet:
                     
 
 if __name__=='__main__':
-    data_files=Data_Directory('/results/',names='middle_sweep_1.brid')
+    data_files=Data_Directory('/results/',names='yuantest2.brid')
     data_files._make_master_dict()
     data=DataHandler(data_files)
     data.prep_data()
