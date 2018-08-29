@@ -652,7 +652,7 @@ if __name__=='__main__':
     data.prep_data()
     print("5")
     #histgen=data.hist_generator()
-    data_files=Data_Directory('large_sweep_1.brid')
+    data_files=Data_Directory('yuantest2.brid')
     #data_files._make_master_dict()
     # data=DataHandler(data_files)
     # data.prep_data()
