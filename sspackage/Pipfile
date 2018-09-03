@@ -10,6 +10,7 @@ pandas = "*"
 matplotlib = "*"
 astropy = "*"
 ipython = "*"
+biplist = "*"
 
 [dev-packages]
 
