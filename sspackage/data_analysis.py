@@ -4,9 +4,6 @@ import biplist as bp
 import pandas as pd
 from math import log10
 import matplotlib
-from collections.abc import Sequence
-
-from shutil import copyfile
 
 rate_set = namedtuple('RateSet', 'a b k')
 
@@ -49,7 +46,7 @@ class DataFiles:
             self.input_files[self.set_strings[i]] = bp.readPlist(v + '/input.data')
 
 
-PROPERTY_LIST = ['rate_constants', 'stochastic_rate_constants', 'volume', 'system_properties', 'simulation_properties', \
+PROPERTY_LIST = ['rate_constants', 'stochastic_rate_constants', 'volume', 'system_properties', 'simulation_properties',
                  'protein_properties']
 
 
@@ -58,6 +55,7 @@ class DataProperties(DataFiles):
         super().__init__(sim_name)
         self.simulation_properties = []
         self.protein_properties = []
+        self.population_properties = defaultdict(dict)
         self.system_properties = []
         self.rate_constants = [rate_set(float(i.a), float(i.b), float(i.k)) for i in
                                self.rate_sets.values()]
@@ -142,8 +140,8 @@ class DataHandler(DataProperties):
         super().__init__(sim_name)
         self.raw_data = {}
         self.file_paths = {}
-        self._file_paths_built = False
-        self._zeros_appended = False
+        self._parameter_array_built = False
+        self._zeros_appended = defaultdict(lambda: False)
         self._agg = False
         self.loaded_indices = []
         self.loaded_runs = {}
@@ -160,7 +158,7 @@ class DataHandler(DataProperties):
 
     def load_data_from_index(self, index, label=None, run_number=0):
         if label is None:
-            label = str(index)+'_'+str(run_number)
+            label = str(index) + '_' + str(run_number)
         if index in self.loaded_indices and run_number in self.loaded_runs:
             print('Already loaded. Label is "{}"'.format(self.labels[index][run_number]))
         else:
@@ -173,18 +171,19 @@ class DataHandler(DataProperties):
 
             self.raw_data[label] = pd.read_json(self.run_dict[self.set_strings[index]][run_number]).sort_index()
             self._append_zeros(label)
-            self.raw_data[label+"_props_index"] = self.protein_properties[index]
+            self.raw_data[label + "_props_index"] = self.protein_properties[index]
 
     def _append_zeros(self, label, max_length=1):
-        if not self._zeros_appended:
+        if not self._zeros_appended[label]:
             for ind, i in enumerate(self.raw_data[label].values):
                 if len(i[0]) > max_length:
                     return self._append_zeros(label, len(i[0]))
                 elif len(i[0]) < max_length:
                     for ii in range(max_length - len(i[0])):
                         self.raw_data[label].values[ind][0].append(0)
+            self.population_properties[label] = {'Most proteins': max_length}
 
-    def _load_agg(self, agg = 'Agg'):
+    def _load_agg(self, agg='Agg'):
         if not self._agg:
             matplotlib.use(agg)
 
@@ -192,39 +191,158 @@ class DataHandler(DataProperties):
         return self.raw_data[label]['t']
 
     def _logt(self, label):
-        if self.logt[label] == []:
+        if not self.logt[label]:
             self.logt[label] = [log10(i) for i in self.raw_data[label]['t']]
         return self.logt[label]
 
     def _mass(self, label):
-        if self.M[label] == []:
-            self.monomers[label] = self.raw_data[label+"_props_index"]['monomers']
-            self.M[label] = [self.monomers[label]-i[0] for i in list(self.raw_data[label]['polymers'])]
+        if not self.M[label]:
+            self.monomers[label] = self.raw_data[label + "_props_index"]['monomers']
+            self.M[label] = [self.monomers[label] - i[0] for i in list(self.raw_data[label]['polymers'])]
         return self.M[label]
 
-    def _logmass(self, label):
+    def _log_mass(self, label):
         return [log10(i) for i in self._mass(label)]
 
-    def plot_mass(self, label, logx=False, logy=False, xrange=None, **kwargs):
-        if logx:
+    def _number(self, label):
+        if not self.P[label]:
+            for ind, i in enumerate(self.raw_data[label]['polymers']):
+                self.P[label].append(0)
+                for j in i[1:]:
+                    if j != 0:
+                        self.P[label][ind] += 1
+        return self.P[label]
+
+    def show_parameter_sets(self):
+        print("PARAMETER HIERARCHY\n")
+        print("||=======PARAMETER==HIERARCHY=======||")
+        if not self._parameter_array_built:
+            # print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("== a ==", "== b ==", "== k ==", "=index="))
+            for ind, i in enumerate(self.rate_sets.values()):
+
+                if i.a not in self.file_paths:
+                    self.file_paths[i.a] = {i.b: {i.k: ind}}
+                    # print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
+                else:
+                    if i.b not in self.file_paths[i.a]:
+                        self.file_paths[i.a][i.b] = {i.k: ind}
+                        #print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
+                    else:
+                        if i.k not in self.file_paths[i.a][i.b]:
+                            self.file_paths[i.a][i.b][i.k] = ind
+                            #print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
+                        else:
+                            counter = 1
+                            in_dict = True
+                            while in_dict:
+                                counter += 1
+                                ky = str(i.k) + "_{}".format(counter)
+                                if ky not in self.file_paths:
+                                    self.file_paths[i.a][i.b][ky] = ind
+                                    #print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
+                                    in_dict = True
+            self._parameter_array_built = True
+
+        print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("== a ==", "== b ==", "== k ==", "=index="))
+        for a_key, aa in self.file_paths.items():
+            new_a = True
+            for b_key, bb in aa.items():
+                new_b = True
+                for k_key, kk in bb.items():
+                    if new_a:
+
+                        print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(a_key, b_key, k_key,
+                                                                      self.file_paths[a_key][b_key][k_key]))
+                        new_a = False
+                        new_b = False
+                    elif new_b:
+                        print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("", b_key, k_key,
+                                                                      self.file_paths[a_key][b_key][k_key]))
+                        new_b = False
+                    else:
+                        print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("", "", k_key,
+                                                                          self.file_paths[a_key][b_key][k_key]))
+        print("||==================================||")
+
+
+# noinspection PyTypeChecker
+class DataPlotter(DataHandler):
+    def __init__(self, sim_name):
+        super().__init__(sim_name)
+
+    def plot_polymers(self, label, polymers=(1), log_x=False, xrange=None, **kwargs):
+        if log_x:
             t = self._logt(label)
             if xrange is not None:
                 xrange = [log10(i) for i in xrange]
         else:
             t = self._t(label)
 
-        if logy:
-            y = self._logmass(label)
+        y_list = [y[i] for y in self.raw_data[label]['polymers'] for i in polymers]
+
+        if "name" not in kwargs:
+            kwargs["name"] = "{}_proteins{}".format(label, "_".join([str(y_index) for y_index in polymers]))
+
+        self.plot_multiple_series(label, t, y_list, x_range=xrange, **kwargs)
+
+    def plot_number(self, label, log_x=False, xrange=None, **kwargs):
+        if log_x:
+            t = self._logt(label)
+            if xrange is not None:
+                xrange = [log10(i) for i in xrange]
         else:
-            y = self._mass(label)
+            t = self._t(label)
+        y = self._number(label)
+        if 'name not in kwargs':
+            kwargs['name'] = "{}_number".format(label)
+
         self.plot_series(label, t, y, x_range=xrange, **kwargs)
 
-    def plot_series(self, label, t, y, show=False, save=True, agg='Agg', name='default', x_range=None, x_index_range=None):
+    def plot_mass(self, label, log_x=False, log_y=False, xrange=None, **kwargs):
+        if log_x:
+            t = self._logt(label)
+            if xrange is not None:
+                xrange = [log10(i) for i in xrange]
+        else:
+            t = self._t(label)
+
+        if log_y:
+            y = self._log_mass(label)
+        else:
+            y = self._mass(label)
+        if "name" not in kwargs:
+            kwargs['name'] = "{}_mass".format(label)
+        self.plot_series(label, t, y, x_range=xrange, **kwargs)
+
+    def plot_multiple_series(self, label, t, y_list, show=False, save=True, agg='Agg', name='default', x_range=None,
+                             x_index_range=None):
+        self._load_agg(agg)
+        import matplotlib.pyplot as plt
+        if name == 'default':
+            name = '{}_series_x{}'.format(label, len(y_list))
+        else:
+            name += '.png'
+        plt.figure()
+        if x_range is not None:
+            plt.xlim(x_range[0], x_range[1])
+        elif x_index_range is not None:
+            plt.xlim(t[x_index_range[0]], t[x_index_range[1]])
+
+        for y in y_list:
+            plt.plot(t, y)
+
+        if save:
+            plt.savefig(name)
+        if show:
+            plt.show()
+
+    def plot_series(self, label, t, y, show=False, save=True, agg='Agg', name='default', x_range=None,
+                    x_index_range=None):
         self._load_agg(agg)
         import matplotlib.pyplot as plt
 
         if name == 'default':
-            name = '{}_mass.png'.format(label)
+            name = '{}_series.png'.format(label)
         else:
             name += '.png'
 
@@ -241,50 +359,52 @@ class DataHandler(DataProperties):
             plt.show()
         plt.close()
 
-    def show_parameter_sets(self):
-        print("PARAMETER HIERARCHY\n")
-        print("||=======PARAMETER==HIERARCHY=======||")
-        if not self._file_paths_built:
-            print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("== a ==", "== b ==", "== k ==", "=index="))
-            for ind, i in enumerate(self.rate_sets.values()):
-                if i.a not in self.file_paths:
-                    self.file_paths[i.a] = {i.b: {i.k: ind}}
-                    print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
-                else:
-                    if i.b not in self.file_paths[i.a]:
-                        self.file_paths[i.a][i.b] = {i.k: ind}
-                        print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
-                    else:
-                        if i.k not in self.file_paths[i.a][i.b]:
-                            self.file_paths[i.a][i.b][i.k] = ind
-                            print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
-                        else:
-                            counter = 1
-                            in_dict = True
-                            while in_dict:
-                                counter += 1
-                                ky = str(i.k) + "_{}".format(counter)
-                                if ky not in self.file_paths:
-                                    self.file_paths[i.a][i.b][ky] = ind
-                                    print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(i.a, i.b, i.k, ind))
-                                    in_dict = True
-            self._file_paths_built = True
-        else:
-            print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("== a ==", "== b ==", "== k ==", "=index="))
-            for a_key, aa in self.file_paths.items():
-                new_a = True
-                for b_key, bb in aa.items():
-                    new_b = True
-                    for k_key, kk in bb.items():
-                        if new_a:
+class AnalysisShell:
+    COMMANDS = ["load_data", "load_sim", "run_sim", "make_input",
+                "plot_mass", "plot_polymer_number", "plot_length",
+                "plot_populations", "host_server", "help",
+                "list_loaded_data", "print_active_set", "print_properties",
+                ]
 
-                            print("||{:<7}||{:<7}||{:<7}||{:>7}||".format(a_key, b_key, k_key, self.file_paths[a_key][b_key][k_key]))
-                            new_a = False
-                            new_b = False
-                        elif new_b:
-                            print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("", b_key, k_key, self.file_paths[a_key][b_key][k_key]))
-                            new_b = False
-                        else:
-                            print("||{:<7}||{:<7}||{:<7}||{:>7}||".format("", "", k_key, self.file_paths[a_key][b_key][k_key]))
-        print("||==================================||")
+    def __init__(self, set = None, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        self.set = set
+        if set is not None:
+            try:
+                self.
 
+    def load_data(self, fp):
+        pass
+
+    def load_sim(self, folder):
+        pass
+
+    def run_sim(self, *args, **kwargs):
+        pass
+
+    def make_input(self, *args, **kwargs):
+        pass
+
+    def plot_mass(self, label, *kwargs):
+        pass
+
+    def plot_polymer_number(self, label, **kwargs):
+        pass
+
+    def plot_length(self, label, **kwargs):
+        pass
+
+    def plot_populations(self, label, show_t_ranges=True, t_range-True):
+
+    @staticmethod
+    def help(string=None):
+        pass
+
+
+
+    def __call__(self, *args, **kwargs):
+        loop = 1
+
+        while loop:
+            comm = input(">>> ")

@@ -2,20 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="db765ccb-1861-4e08-8b88-b6d4da98f736" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/John1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data_analysis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/timeseries.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KMC.py" beforeDir="false" afterPath="$PROJECT_DIR$/KMC.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pipfile" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pipfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/running.py" beforeDir="false" afterPath="$PROJECT_DIR$/running.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/combine1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/input.data" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/sweep_params.data" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/utes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_analysis.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -41,26 +31,27 @@
           <entry key="data" value="1" />
           <entry key="json" value="2" />
           <entry key="lock" value="1" />
-          <entry key="png" value="11" />
+          <entry key="png" value="22" />
           <entry key="py" value="8" />
+          <entry key="t" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Image" value="11" />
+          <entry key="Image" value="22" />
           <entry key="JSON" value="2" />
-          <entry key="PLAIN_TEXT" value="3" />
+          <entry key="PLAIN_TEXT" value="4" />
           <entry key="Python" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="12913" />
+          <entry key="py" value="20971" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="12913" />
+          <entry key="Python" value="20971" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -98,8 +89,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/running.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="324">
-                  <caret line="90" column="13" lean-forward="true" selection-start-line="90" selection-start-column="13" selection-end-line="90" selection-end-column="13" />
+                <state relative-caret-position="303">
+                  <caret line="71" column="12" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="12" />
                 </state>
               </provider>
             </entry>
@@ -131,14 +122,14 @@
             <entry file="file://$PROJECT_DIR$/data_analysis.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="327">
-                  <caret line="243" column="8" selection-start-line="243" selection-start-column="8" selection-end-line="243" selection-end-column="8" />
+                  <caret line="215" column="8" selection-start-line="215" selection-start-column="8" selection-end-line="215" selection-end-column="8" />
                   <folding>
                     <element signature="e#0#21#0" expanded="true" />
-                    <marker date="1535941270427" expanded="true" signature="667:672" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="1405:1485" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="1836:1841" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="2950:3116" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="4975:11304" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="601:606" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="1339:1419" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="1768:1773" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="2937:3103" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="4962:10802" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -170,19 +161,23 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/data_analysis.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="236">
-                  <caret line="219" column="36" selection-start-line="219" selection-start-column="36" selection-end-line="219" selection-end-column="36" />
+                <state relative-caret-position="243">
+                  <caret line="366" column="16" selection-start-line="366" selection-start-column="16" selection-end-line="366" selection-end-column="16" />
                   <folding>
                     <element signature="e#0#21#0" expanded="true" />
-                    <marker date="1535941270427" expanded="true" signature="586:651" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="667:672" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="1405:1485" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="1836:1841" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="3448:4941" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="4734:4743" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="7104:7254" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="7976:8046" ph="..." />
-                    <marker date="1535941270427" expanded="true" signature="8352:8691" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="520:585" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="601:606" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="1339:1419" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="1768:1773" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="3435:4928" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="4721:4730" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="7206:7354" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="8025:8031" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="10864:10869" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="13872:13873" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="13872:13877" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="14809:14815" ph="..." />
+                    <marker date="1536034770529" expanded="true" signature="14855:14876" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -201,8 +196,11 @@
       <find>calcul</find>
       <find>read</find>
       <find>t&quot;</find>
-      <find>run_</find>
       <find>name</find>
+      <find>_file_pa</find>
+      <find>named</find>
+      <find>run_</find>
+      <find>run_d</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -291,11 +289,11 @@
     <frame x="0" y="23" width="1440" height="877" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17310444" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.17310444" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32950193" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -305,7 +303,7 @@
       <window_info anchor="bottom" id="YouTrack" order="8" />
       <window_info anchor="bottom" id="Dilbert" order="9" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.33716476" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.33716476" />
       <window_info anchor="bottom" id="Version Control" order="12" />
       <window_info anchor="bottom" id="Event Log" order="13" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="14" weight="0.32950193" />
@@ -403,13 +401,6 @@
     <entry file="file://$PROJECT_DIR$/1_0_mass.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/running.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="90" column="13" lean-forward="true" selection-start-line="90" selection-start-column="13" selection-end-line="90" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/1_0.2.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -429,21 +420,56 @@
     <entry file="file://$PROJECT_DIR$/1_0.5.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/1_0.6.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/1_0.7.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/3_0_mass.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/3_0_series.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tits_mass.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tits2.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tits3.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/t">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/running.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="71" column="12" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/data_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="219" column="36" selection-start-line="219" selection-start-column="36" selection-end-line="219" selection-end-column="36" />
+        <state relative-caret-position="243">
+          <caret line="366" column="16" selection-start-line="366" selection-start-column="16" selection-end-line="366" selection-end-column="16" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
-            <marker date="1535941270427" expanded="true" signature="586:651" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="667:672" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="1405:1485" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="1836:1841" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="3448:4941" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="4734:4743" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="7104:7254" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="7976:8046" ph="..." />
-            <marker date="1535941270427" expanded="true" signature="8352:8691" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="520:585" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="601:606" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="1339:1419" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="1768:1773" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="3435:4928" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="4721:4730" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="7206:7354" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="8025:8031" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="10864:10869" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="13872:13873" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="13872:13877" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="14809:14815" ph="..." />
+            <marker date="1536034770529" expanded="true" signature="14855:14876" ph="..." />
           </folding>
         </state>
       </provider>
