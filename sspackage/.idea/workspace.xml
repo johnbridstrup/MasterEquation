@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="db765ccb-1861-4e08-8b88-b6d4da98f736" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Pipfile" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../Pipfile.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipfile" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/running.py" beforeDir="false" afterPath="$PROJECT_DIR$/running.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,12 +49,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="24755" />
+          <entry key="py" value="24781" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="24755" />
+          <entry key="Python" value="24781" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -75,19 +79,19 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/running.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1065">
-              <caret line="71" column="12" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="12" />
+            <state relative-caret-position="30">
+              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/utes.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2483">
+            <state>
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -121,6 +125,7 @@
       <find>property_l</find>
       <find>plot_pol</find>
       <find>_mass</find>
+      <find>utils</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -129,10 +134,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/running.py" />
         <option value="$PROJECT_DIR$/KMC_Analysis.py" />
         <option value="$PROJECT_DIR$/timeseries.py" />
         <option value="$PROJECT_DIR$/data_analysis.py" />
+        <option value="$PROJECT_DIR$/running.py" />
       </list>
     </option>
   </component>
@@ -203,8 +208,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="877" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17335244" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17335244" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -218,7 +224,7 @@
       <window_info anchor="bottom" id="YouTrack" order="8" />
       <window_info anchor="bottom" id="Dilbert" order="9" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.33716476" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.33716476" />
       <window_info anchor="bottom" id="Version Control" order="12" />
       <window_info anchor="bottom" id="Event Log" order="13" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="14" weight="0.32950193" />
@@ -334,19 +340,19 @@
     <entry file="file://$PROJECT_DIR$/1_0_number.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/running.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1065">
-          <caret line="71" column="12" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/utes.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2483">
+        <state>
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/running.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
         </state>
       </provider>
     </entry>
