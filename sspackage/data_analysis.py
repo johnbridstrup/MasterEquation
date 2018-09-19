@@ -29,7 +29,6 @@ class DataFiles:
         self.rate_sets = defaultdict(rate_set)
         for ind, v in enumerate(self.set_strings):
             _, a, _, b, _, k = v.split('_')
-            print(v)
             self.rate_sets[v] = rate_set(a, b, k)
         for i, v in enumerate(self.filepaths):
             for j in glob(v + '/*.json'):
@@ -319,9 +318,9 @@ class DataPlotter(DataHandler):
         self._load_agg(agg)
         import matplotlib.pyplot as plt
         if name == 'default':
-            name = '{}_series_x{}'.format(label, len(y_list))
+            name = '{}_series_x{}'.format(label, len(_list))
         else:
-            name += '.png'
+            name = str(name) + '.png'
         plt.figure()
         if x_range is not None:
             plt.xlim(x_range[0], x_range[1])
@@ -344,7 +343,7 @@ class DataPlotter(DataHandler):
         if name == 'default':
             name = '{}_series.png'.format(label)
         else:
-            name += '.png'
+            name = str(name) + '.png'
 
         plt.figure()
         if x_range is not None:
@@ -359,26 +358,58 @@ class DataPlotter(DataHandler):
             plt.show()
         plt.close()
 
+
 class AnalysisShell:
     COMMANDS = ["load_data", "load_sim", "run_sim", "make_input",
                 "plot_mass", "plot_polymer_number", "plot_length",
-                "plot_populations", "host_server", "help",
-                "list_loaded_data", "print_active_set", "print_properties",
-                ]
+                "plot_populations", "help", "quit", 'print_loaded',
+                "print_sets"]
 
-    def __init__(self, set = None, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-        self.set = set
-        if set is not None:
+    LOOP = 0
+
+    def __init__(self):
+        self.data_objects = {}
+        self.sim_names = []
+        self.active = None
+
+    def load_sim(self, name):
+        # name = input("simulation name?\n>>> ")
+        self.sim_names.append(name)
+        self.data_objects[name] = DataPlotter(name)
+        self.active = self.data_objects[name]
+
+    def load_data(self, index, label=None, run_number=0, active = 'current'):
+        ind = int(index)
+        run = int(run_number)
+        if active == 'current':
+            self.active.load_data_from_index(ind, label = label, run_number = run)
+        else:
             try:
-                self.
+                self.active = self.data_objects[active]
+            except KeyError:
+                self.load_sim(active)
 
-    def load_data(self, fp):
-        pass
+    def print_sets(self, active='current'):
+        if active != 'current':
+            try:
+                self.active = self.data_objects[active]
+            except KeyError:
+                self.load_sim(active)
 
-    def load_sim(self, folder):
-        pass
+        self.active.show_parameter_sets()
+
+    def run(self, func_name, *args, label=None, active='current'):
+        if active != 'current':
+            try:
+                self.active = self.data_objects[active]
+            except KeyError:
+                self.load_sim(active)
+
+        getattr(self.active, func_name)(label, *args)
+
+    def print_loaded(self):
+        print("LOADED SIMULATION LABELS:")
+        print("\n\t".join(self.sim_names))
 
     def run_sim(self, *args, **kwargs):
         pass
@@ -386,25 +417,98 @@ class AnalysisShell:
     def make_input(self, *args, **kwargs):
         pass
 
-    def plot_mass(self, label, *kwargs):
-        pass
+    def plot_mass(self, label, active='current', **kwargs):
+        lt = input('log t axis? (y/n): ')
+        logx = (lt == 'y')
+        ly = input('log y axis? (y/n): ')
+        logy = (ly == 'y')
 
-    def plot_polymer_number(self, label, **kwargs):
-        pass
+        xrange = input('t range? ([t0,tf] or blank): ')
+        trange = [float(i) for i in xrange.strip('[').strip(']').strip(' ').split(',')]
+
+        if active != 'current':
+            try:
+                self.active = self.data_objects[active]
+            except KeyError:
+                self.load_sim(active)
+
+        self.active.plot_mass(label, logx, logy, trange, **kwargs)
+
+    def plot_polymer_number(self, label, active='current', **kwargs):
+        lt = input('log t axis? (y/n): ')
+        logx = (lt == 'y')
+        ly = input('log y axis? (y/n): ')
+        logy = (ly == 'y')
+
+        xrange = input('t range? ([t0,tf] or blank): ')
+        trange = [float(i) for i in xrange.strip('[').strip(']').strip(' ').split(',')]
+
+        if active != 'current':
+            try:
+                self.active = self.data_objects[active]
+            except KeyError:
+                self.load_sim(active)
+
+        self.active.plot_number(label, logx, trange, **kwargs)
 
     def plot_length(self, label, **kwargs):
         pass
 
-    def plot_populations(self, label, show_t_ranges=True, t_range-True):
+    def plot_populations(self, label, show_t_ranges=True, t_range=True):
+        pass
+
+    @staticmethod
+    def error_x(comm=None):
+        if comm is not None:
+            print("{} is not a command".format(comm))
+        else:
+            print("command failed")
+
+    @classmethod
+    def quit(cls):
+        cls.LOOP = 0
 
     @staticmethod
     def help(string=None):
-        pass
-
-
+        print("Your command options are: ")
+        [print(i) for i in AnalysisShell.COMMANDS]
 
     def __call__(self, *args, **kwargs):
-        loop = 1
+        self.__class__.LOOP = 1
 
-        while loop:
-            comm = input(">>> ")
+        while self.LOOP:
+            input_comm = input(">>> ")
+            kwcomms = {}
+            rcomms = []
+            prfx, full_comms = input_comm.split(' ')[0], input_comm.split(' ')[1:]
+            for arg in full_comms:
+                if '=' in arg:
+                    kw_pair = arg.split('=')
+                    try:
+                        kw_pair[1] = float(kw_pair[1])
+                    except ValueError:
+                        pass
+
+                    kwcomms[kw_pair[0]] = kw_pair[1]
+                else:
+                    rcomms.append(arg)
+
+            if prfx in self.COMMANDS:
+                try:
+                    getattr(self, prfx)(*rcomms, **kwcomms)
+                except Exception as e:
+                    print(e)
+            elif prfx == 'suspend':
+                yield self.active
+            else:
+                self.error_x(prfx)
+
+class MainLoop:
+    def __init__(self):
+        self._loop_object = AnalysisShell()
+
+    def start(self):
+        self._loop = self._loop_object()
+
+    def enter_loop(self):
+        self.active = next(self._loop)
