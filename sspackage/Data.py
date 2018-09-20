@@ -140,7 +140,7 @@ class Data_Directory:
             
             """
             # check = False
-            tmpParams = pll.readPlist(str(i) + '/input.data')
+            tmpParams = pll.readPlist(str(i) + '/input.data.2')
 
             self._params[self.active_name].append(tmpParams)
             self._params['path'].append(str(i))

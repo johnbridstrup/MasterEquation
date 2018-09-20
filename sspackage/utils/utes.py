@@ -1,12 +1,7 @@
-import sys
-import os
 import glob
-from pathlib import Path
-import importlib as port 
-from functools import wraps
-from numpy import ndarray
-from datetime import datetime
+import os
 import plistlib as pll
+
 
 # class includes:
 #     def __init__(self,path,includes=None):
@@ -27,7 +22,9 @@ import plistlib as pll
 #                         raise
 def path_leaf(path):
     head, tail = os.path.split(path)
-    return tail or os.path.basename(head)  
+    return tail or os.path.basename(head)
+
+
 """
 class includer:
     """"""include utility
@@ -107,67 +104,80 @@ class includer:
             print("broked")
                                
     """
+
+
 def wd():
     return os.getcwd()
-def mdirs(fn,dirs="/results/"):
-    os.makedirs(wd()+dirs+fn,exist_ok=True)
-def file_list(dr=None,ext=None):
+
+
+def mdirs(fn, dirs="/results/"):
+    os.makedirs(wd() + dirs + fn, exist_ok=True)
+
+
+def file_list(dr=None, ext=None):
     if dr is not None:
         try:
             if ext is not None:
                 try:
-                    return glob.glob(dr+'*.'+ext)
+                    return glob.glob(dr + '*.' + ext)
                 except:
                     try:
-                        return [glob.glob(dr+'*.'+i) for i in ext]
+                        return [glob.glob(dr + '*.' + i) for i in ext]
                     except:
-                        print("{} is not a valid path probably or maybe {} is some weird object".format(dr,ext))
+                        print("{} is not a valid path probably or maybe {} is some weird object".format(dr, ext))
                         raise
             else:
                 try:
-                    return glob.glob(dr+'*')
+                    return glob.glob(dr + '*')
                 except:
-                    print("{} is not a valid path probably or maybe {} is some weird object".format(dr,ext))
+                    print("{} is not a valid path probably or maybe {} is some weird object".format(dr, ext))
                     raise
         except:
             try:
-                return [file_list(i,ext) for i in dr]
+                return [file_list(i, ext) for i in dr]
             except:
                 print("{} (or \"the directory\" if i'm to believe your nonsense) smells funky".format(dr))
                 raise
+
+
 def newdirs(dr, path=None, rel_path=None, Dirs=None):
     if path is None:
-        path=wd()
+        path = wd()
     if rel_path is not None:
         path = path + '/' + rel_path
     print(path)
     if Dirs is None:
-        Dirs=os.listdir(path)
+        Dirs = os.listdir(path)
     if not os.path.isdir(path):
         try:
-            os.mkdir(path+'/'+dr)
+            os.mkdir(path + '/' + dr)
         except:
             try:
                 for i in dr:
-                    newdirs(i,path,Dirs)
+                    newdirs(i, path, Dirs)
             except:
                 print('{} is already a directory'.format(i))
 
 
 class config_context:
-    mode='wb'
+    mode = 'wb'
+
     @classmethod
-    def set_mode(cls,mode='wb'):
-        cls.mode=mode
+    def set_mode(cls, mode='wb'):
+        cls.mode = mode
+
     @classmethod
     def __enter__(cls):
-        cls.open_file = open(wd()+'/inputs/', cls.mode)
+        cls.open_file = open(wd() + '/inputs/', cls.mode)
         return cls.open_file
+
     @classmethod
     def __exit__(cls, *args):
         cls.open_file.close()
+
+
 class conf_context():
-    def __init__(self, filename, mode='wb',write=True):
+    def __init__(self, filename, mode='wb', write=True):
         self.filename = filename
         self.mode = mode
         if write:
@@ -179,13 +189,18 @@ class conf_context():
 
     def __exit__(self, *args):
         self.open_file.close()
+
+
 def mkdirs(fn):
-    os.makedirs(fn,exist_ok=True)
+    os.makedirs(fn, exist_ok=True)
+
+
 def load_config(fn):
     config_context.set_mode(mode='r')
-    oup=pll.readPlist(fn)
+    oup = pll.readPlist(fn)
     return oup
+
+
 if __name__ == '__main__':
     newdirs("test")
-    print(file_list(wd()))            
-      
+    print(file_list(wd()))

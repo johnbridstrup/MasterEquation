@@ -39,7 +39,7 @@ app_dir=os.getcwd()+'/'
 results_dir=str(app_dir)+"results/"
 runs_dir=str(results_dir)+runs_name+'.brid/'
 utils_dir=str(app_dir)+"utils/"
-params=pll.readPlist(utils_dir+'input.data')
+params=pll.readPlist(utils_dir+'input.data.2')
 os.makedirs(runs_dir,exist_ok=True)
 os.makedirs(utils_dir,exist_ok=True)
 # print(runs_dir)
@@ -78,9 +78,9 @@ for aa,kk in product(asw,ksw):
     # params['simulation'][]
     os.makedirs(runs_dir+fn+"/",exist_ok=True)
     os.makedirs(runs_dir+fn+"/averaged/",exist_ok=True)
-    with open(utils_dir+'input.data','wb') as f:
+    with open(utils_dir+'input.data.2','wb') as f:
         pll.dump(params,f)
-    with open(runs_dir+fn+"/input.data",'wb') as f:
+    with open(runs_dir+fn+"/input.data.2",'wb') as f:
         pll.dump(params,f)
     for i in range(1,runs_num+1):
         sim.simulation(runs_dir+fn+"/"+fn+"_"+str(i)+".json")

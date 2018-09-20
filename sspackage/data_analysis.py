@@ -42,7 +42,7 @@ class DataFiles:
 
     def load_inputs(self):
         for i, v in enumerate(self.filepaths):
-            self.input_files[self.set_strings[i]] = bp.readPlist(v + '/input.data')
+            self.input_files[self.set_strings[i]] = bp.readPlist(v + '/input.data.2')
 
 
 PROPERTY_LIST = ['rate_constants', 'stochastic_rate_constants', 'volume', 'system_properties', 'simulation_properties',
