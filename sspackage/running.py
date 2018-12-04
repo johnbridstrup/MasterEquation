@@ -12,7 +12,7 @@ from itertools import product
 # JUST CHANGE THIS FILE NAME NOT THE PATHS
 # ^ ==============================================================================
 # ? ==============================================================================
-runs_name = "johntest2"
+runs_name = "hometest"
 
 runs_num = 10
 end_time = 2000
