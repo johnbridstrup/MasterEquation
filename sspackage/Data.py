@@ -140,8 +140,8 @@ class Data_Directory:
             
             """
             # check = False
-            tmpParams = pll.readPlist(str(i) + '/input.data.2')
-
+            # tmpParams = pll.readPlist(str(i) + '/input.data.2')
+            tmpParams = pll.readPlist(str(i) + '/input.data')
             self._params[self.active_name].append(tmpParams)
             self._params['path'].append(str(i))
 
@@ -678,7 +678,7 @@ class Plotter:
 
 
 if __name__ == '__main__':
-    data_files = Data_Directory('/results/', names='yuantest3.brid')
+    data_files = Data_Directory('/results/', names='hometest.brid')
     data_files._make_master_dict()
     data = DataHandler(data_files)
     data.prep_data()

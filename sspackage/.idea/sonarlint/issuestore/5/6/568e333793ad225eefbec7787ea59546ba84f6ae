@@ -1,0 +1,7 @@
+
+rpython:S3776Œ"TRefactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.(Òë˜’ùÿÿÿÿ
+rpython:S1542"ZRename function "SmoluchowskiModel" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(àŽì´
+jpython:S100ö"MRename method "subOne" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(¾’£¢ûÿÿÿÿ
+5python:S2772¨"Remove this unneeded "pass".(ã‘Û¾
+gpython:S100ÿ"ORename method "breakOne" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(èûû¯
+dpython:S100ï"MRename method "addOne" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(‚©â4

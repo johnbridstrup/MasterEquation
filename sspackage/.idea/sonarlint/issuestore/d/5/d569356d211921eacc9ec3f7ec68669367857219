@@ -1,0 +1,6 @@
+
+tpython:S3776×"TRefactor this function to reduce its Cognitive Complexity from 43 to the 15 allowed.(èÊ İ8ŠÁ³Ô‡-
+Gpython:S1481¹"(Remove the unused local variable "logy".(ï¢âZ8ŠÁ³Ô‡-
+npython:S107Ò"OMethod "plot_series" has 10 parameters, which is greater than the 7 authorized.(ƒÀ×à8ŠÁ³Ô‡-
+|python:S107¼"XMethod "plot_multiple_series" has 10 parameters, which is greater than the 7 authorized.(½µ¯ÿÿÿÿÿ8ŠÁ³Ô‡-
+ypython:S3776Ü"TRefactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.(Í«Îòúÿÿÿÿ8ŠÁ³Ô‡-

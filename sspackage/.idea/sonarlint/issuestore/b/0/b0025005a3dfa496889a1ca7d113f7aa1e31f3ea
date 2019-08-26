@@ -1,0 +1,5 @@
+
+ypython:S117–"URename this local variable "Dirs" to match the regular expression ^[_a-z][a-z0-9_]*$.(¦ΐά‚όÿÿÿÿ8Α³Τ‡-
+xpython:S3776u"TRefactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.(Ύ•πωÿÿÿÿ8Α³Τ‡-
+npython:S117"PRename this parameter "Dirs" to match the regular expression ^[_a-z][a-z0-9_]*$.(®γΞ8Α³Τ‡-
+jpython:S1542m"KRename function "wd" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(¥ξ­ϊ8Α³Τ‡-

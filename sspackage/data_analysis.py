@@ -42,7 +42,7 @@ class DataFiles:
 
     def load_inputs(self):
         for i, v in enumerate(self.filepaths):
-            self.input_files[self.set_strings[i]] = bp.readPlist(v + '/input.data.2')
+            self.input_files[self.set_strings[i]] = bp.readPlist(v + '/input.data')
 
 
 PROPERTY_LIST = ['rate_constants', 'stochastic_rate_constants', 'volume', 'system_properties', 'simulation_properties',
@@ -158,15 +158,16 @@ class DataHandler(DataProperties):
     def load_data_from_index(self, index, label=None, run_number=0):
         if label is None:
             label = str(index) + '_' + str(run_number)
-        if index in self.loaded_indices and run_number in self.loaded_runs:
+        if index in self.loaded_indices and run_number in self.loaded_runs[index]:
             print('Already loaded. Label is "{}"'.format(self.labels[index][run_number]))
         else:
             if index not in self.loaded_indices:
                 self.loaded_indices.append(index)
                 self.loaded_runs[index] = [run_number]
                 self.labels[index] = {run_number: label}
-            elif run_number not in self.loaded_runs:
-                self.loaded_runs[index][run_number] = label
+            elif run_number not in self.loaded_runs[index]:
+                self.labels[index][run_number] = label
+                self.loaded_runs[index].append(run_number)
 
             self.raw_data[label] = pd.read_json(self.run_dict[self.set_strings[index]][run_number]).sort_index()
             self._append_zeros(label)
@@ -285,20 +286,24 @@ class DataPlotter(DataHandler):
         self.plot_multiple_series(label, t, y_list, x_range=xrange, **kwargs)
 
     def plot_number(self, label, log_x=False, xrange=None, **kwargs):
+        plot_label = "{}_number".format(label)
         if log_x:
+            plot_label += '_logx'
             t = self._logt(label)
             if xrange is not None:
                 xrange = [log10(i) for i in xrange]
         else:
             t = self._t(label)
         y = self._number(label)
-        if 'name not in kwargs':
-            kwargs['name'] = "{}_number".format(label)
 
-        self.plot_series(label, t, y, x_range=xrange, **kwargs)
+        self.plot_series(label, t, y, log_x, False, x_range=xrange, name=plot_label, **kwargs)
 
     def plot_mass(self, label, log_x=False, log_y=False, xrange=None, **kwargs):
+
+        plot_label = "{}_mass".format(label)
+
         if log_x:
+            plot_label += '_logx'
             t = self._logt(label)
             if xrange is not None:
                 xrange = [log10(i) for i in xrange]
@@ -307,11 +312,11 @@ class DataPlotter(DataHandler):
 
         if log_y:
             y = self._log_mass(label)
+            plot_label += '_logy'
         else:
             y = self._mass(label)
-        if "name" not in kwargs:
-            kwargs['name'] = "{}_mass".format(label)
-        self.plot_series(label, t, y, x_range=xrange, **kwargs)
+
+        self.plot_series(label, t, y, log_x, log_y, x_range=xrange, name=plot_label, **kwargs)
 
     def plot_multiple_series(self, label, t, y_list, show=False, save=True, agg='Agg', name='default', x_range=None,
                              x_index_range=None):
@@ -335,15 +340,17 @@ class DataPlotter(DataHandler):
         if show:
             plt.show()
 
-    def plot_series(self, label, t, y, show=False, save=True, agg='Agg', name='default', x_range=None,
+    def plot_series(self, label, t, y, lx, ly, show=False, save=True, agg='Agg', name='default', x_range=None,
                     x_index_range=None):
         self._load_agg(agg)
         import matplotlib.pyplot as plt
+        index = int(label.split('_')[0])
+        run = int(label.split('_')[1]) + 1
 
-        if name == 'default':
-            name = '{}_series.png'.format(label)
-        else:
-            name = str(name) + '.png'
+        # if name == 'default':
+        #     name = '{}_series'.format(label)
+        # else:
+        #     name = str(name) + '.png'
 
         plt.figure()
         if x_range is not None:
@@ -353,7 +360,16 @@ class DataPlotter(DataHandler):
 
         plt.plot(t, y)
         if save:
-            plt.savefig(name)
+            path = self.filepaths[index]
+            print(name)
+            save_path = path+'/'+name.split('_')[2] + '_' + str(run)
+
+            if lx:
+                save_path += '_logx'
+            if ly:
+                save_path += '_logy'
+            print(save_path)
+            plt.savefig(save_path)
         if show:
             plt.show()
         plt.close()

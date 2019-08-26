@@ -1,4 +1,5 @@
-#! kernels.py
+#!/usr/bin/env python3
+
 import KMC
 import statevector as sv
 from abc import ABC, abstractmethod
@@ -154,7 +155,6 @@ class N_Molecular(RateTransform):
         self.transform()
 
     def transform(self):
-        # print("nmoltrans")
         nn = self.bulkrate
         # print(nn)
         if self.params['same']:
@@ -181,14 +181,13 @@ class Kernel(ABC):
     def __init__(self, f, bulk_transform=default_transform, **kwargs):
         self.bulk_transform = bulk_transform
         self.freq = None
-        self.bulkrate = f
+        self.bulk_rate = f
         self.propensities = []
         try:
             # print("here1")
-            self.freq = bulk_transform(self.bulkrate, **kwargs)
-        except:
-            # print("Jawn didn't calculate propensity")
-            self.freq = self.bulkrate
+            self.freq = bulk_transform(self.bulk_rate, **kwargs)
+        except Exception:
+            self.freq = self.bulk_rate
 
     def add_propensity(self, prop, label=None):
         if label is None:
@@ -232,7 +231,6 @@ class Coagulation(Kernel):
     def __call__(self, s):
         try:
             outp = []
-            # print("THE SSSSS ", s)
             if len(s) > 2:
                 for ij, j in enumerate(s[1:]):
                     for ii, i in enumerate(s[ij:]):
@@ -282,17 +280,15 @@ class Nucleation(Kernel):
                 # print(3)
                 for i in range(self.nc):
                     prod = 1.0*prod*(1.0*s[0]-1.0*i)
-                # print("daprooood",prod)
                 return prod
             else:
                 return 0.0
         except:
-            # print("catchin some't ", e)
             return 0.0
 
 
 class MonomerSubtraction(Kernel):
-    def __init__(self, f, bulk_transform=Unimolecular, *args, **kwargs):
+    def __init__(self, f, bulk_transform = Unimolecular, *args, **kwargs):
         super().__init__(f, bulk_transform)
 
     def __call__(self, s, **kwargs):

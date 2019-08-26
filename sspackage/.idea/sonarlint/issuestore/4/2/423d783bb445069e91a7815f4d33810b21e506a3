@@ -1,0 +1,19 @@
+
+rpython:S3776Š"TRefactor this function to reduce its Cognitive Complexity from 28 to the 15 allowed.(ó¥ˆêÿÿÿÿÿ
+mpython:S3776«"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(ñ™™²
+mpython:S3776ã"TRefactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.(‡ˆı
+rpython:S3776‹"TRefactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.(¡Ğ“«şÿÿÿÿ
+rpython:S3776§"TRefactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.(ÙÌÕúÿÿÿÿ
+rpython:S3776Ë"TRefactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.(ÙÌÕúÿÿÿÿ
+Apython:S1481 "(Remove the unused local variable "data".(—½êù
+Fpython:S1481"(Remove the unused local variable "data".(ªÙÅ™ÿÿÿÿÿ
+rpython:S117"ZRename this local variable "tmpParams" to match the regular expression ^[_a-z][a-z0-9_]*$.(Â¥ç—
+spython:S117¢"[Rename this local variable "ddff_noNaN" to match the regular expression ^[_a-z][a-z0-9_]*$.(´ßÛ±
+wpython:S117¹"ZRename this local variable "ddf_noNaN" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÓçŒÀøÿÿÿÿ
+jpython:S1160"NRename this field "_Paths" to match the regular expression ^[_a-z][_a-z0-9]*$.(¨¯½Òüÿÿÿÿ
+hpython:S116@"LRename this field "Path" to match the regular expression ^[_a-z][_a-z0-9]*$.(µì…Ïşÿÿÿÿ
+gpython:S116B"KRename this field "Top" to match the regular expression ^[_a-z][_a-z0-9]*$.(ËÑó§ùÿÿÿÿ
+vpython:S116"YRename this field "noNan_master_data" to match the regular expression ^[_a-z][_a-z0-9]*$.(¤×Ññÿÿÿÿÿ
+zpython:S18454"bRename field "_paths" to prevent any misunderstanding/clash with field "_Paths" defined on line 48(Ù„²
+{python:S1845@"^Rename field "Path" to prevent any misunderstanding/clash with field "path" defined on line 63(µì…Ïşÿÿÿÿ
+ypython:S1845B"\Rename field "Top" to prevent any misunderstanding/clash with field "top" defined on line 57(ËÑó§ùÿÿÿÿ

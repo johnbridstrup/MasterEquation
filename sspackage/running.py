@@ -84,7 +84,6 @@ for aa, kk in product(asw, ksw):
     with open(runs_dir + fn + "/input.data", 'wb') as f:
         pll.dump(params, f)
     for i in range(1, runs_num + 1):
-        ## IF EVERYTHING BREAKS
         # sim.simulation(runs_dir + fn + "/" + fn + "_" + str(i) + ".json")
         if i < 9:
             sim.simulation(runs_dir + fn + "/" + fn + "_0" + str(i) + ".json")

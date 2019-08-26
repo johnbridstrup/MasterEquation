@@ -1,0 +1,5 @@
+
+qpython:S3776e"TRefactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.( ×¹Øûÿÿÿÿ
+mpython:S3776š"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(œÿ¶õ
+gpython:S100Á"ORename method "saveData" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(²—Œ
+opython:S116İ"WRename this field "summed_P_vector" to match the regular expression ^[_a-z][_a-z0-9]*$.(›çÃ‚
